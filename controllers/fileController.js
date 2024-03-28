@@ -12,7 +12,6 @@ exports.saveFileDetails = async (req, res) => {
       fileData,
     });
   } catch (error) {
-    // throw error;
     res.status(400).json({
       message: "failed to save file",
       error,
