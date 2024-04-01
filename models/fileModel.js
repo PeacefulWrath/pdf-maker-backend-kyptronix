@@ -4,24 +4,12 @@ const fileSchema = new mongoose.Schema(
   {
     file_name: {
       type: String,
+      // required: true,
+    },
+    pdf: {
+      type: Buffer,
       required: true,
     },
-
-    file_data: {
-      type: String,
-      required: true,
-    },
-
-    accessible_by: [
-      {
-        email: {
-          type: String,
-        },
-        status: {
-          type: String,
-        },
-      },
-    ],
   },
   { timestamps: true }
 );
