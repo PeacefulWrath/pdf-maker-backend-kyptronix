@@ -2,6 +2,8 @@ const FileModel = require("../models/fileModel");
 const fs = require("fs");
 const cloudinary = require("cloudinary");
 const dotenv = require("dotenv");
+const Cryptr = require("cryptr");
+const cryptr = new Cryptr("12345");
 
 // exports.updateStatus = async (req, res) => {
 //   try {
@@ -75,7 +77,7 @@ exports.saveFileDetails = async (req, res) => {
     if (result) {
       const insertedData = await FileModel.create({
         file_name: req.file.originalname,
-        pdf_url: result.url,
+        pdf_url: cryptr.encrypt(result.url),
       });
       if (insertedData) {
         return res.status(200).send(insertedData);
@@ -94,7 +96,12 @@ exports.getAllFiles = async (req, res) => {
     const filesData = await FileModel.find({});
 
     if (filesData) {
-      res.status(201).send(filesData);
+      const tempData = [];
+      filesData.forEach((file) => {
+        file.pdf_url = cryptr.decrypt(file?.pdf_url);
+        tempData.push(file);
+      });
+      res.status(201).send(tempData);
     }
   } catch (error) {
     res.status(400).send(error.message);
