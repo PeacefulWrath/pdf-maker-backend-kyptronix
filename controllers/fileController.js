@@ -1,23 +1,7 @@
 const FileModel = require("../models/fileModel");
-
-exports.saveFileDetails = async (req, res) => {
-  try {
-    const fileData = await FileModel.create({
-      file_name: req.body.file_name,
-      file_data: req.body.file_data,
-      accessible_by: req.body.accessible_by,
-    });
-    res.status(200).json({
-      message: "file saved successfully",
-      fileData,
-    });
-  } catch (error) {
-    res.status(400).json({
-      message: "failed to save file",
-      error,
-    });
-  }
-};
+const fs = require("fs");
+const cloudinary = require("cloudinary");
+const dotenv = require("dotenv");
 
 // exports.updateStatus = async (req, res) => {
 //   try {
@@ -53,18 +37,67 @@ exports.saveFileDetails = async (req, res) => {
 //     });
 //   }
 // };
+dotenv.config();
+cloudinary.v2.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+async function uploadToCloudinary(locaFileName, locaFilePath) {
+  return cloudinary.v2.uploader
+    .upload(locaFilePath, {
+      public_id: locaFileName,
+      folder: "pdfs/",
+      use_filename: true,
+    })
+    .then((result) => {
+      fs.unlinkSync(locaFilePath);
+
+      return {
+        message: "Success",
+        url: result.url,
+      };
+    })
+    .catch((error) => {
+      fs.unlinkSync(locaFilePath);
+      console.log("cloudinary error", error);
+      return { message: "Fail to upload in cloudinary" };
+    });
+}
+
+exports.saveFileDetails = async (req, res) => {
+  try {
+    var locaFilePath = req.file.path;
+    var locaFileName = req.file.filename;
+
+    const result = await uploadToCloudinary(locaFileName, locaFilePath);
+
+    if (result) {
+      const insertedData = await FileModel.create({
+        file_name: req.file.originalname,
+        pdf_url: result.url,
+      });
+      if (insertedData) {
+        res.status(200).send(insertedData);
+      } else {
+        throw new Error("cannotinsert data in db");
+      }
+    }
+    throw new Error("error in saveFileDetails function ");
+  } catch (error) {
+    res.status(400).send({ message: error.message });
+  }
+};
 
 exports.getAllFiles = async (req, res) => {
   try {
-    const fileData = await FileModel.find({});
-    res.status(200).json({
-      message: "all files",
-      fileData,
-    });
+    const filesData = await FileModel.find({});
+
+    if (filesData) {
+      res.status(201).send(filesData);
+    }
   } catch (error) {
-    res.status(400).json({
-      message: "failed to get all files",
-      error,
-    });
+    res.status(400).send(error.message);
   }
 };

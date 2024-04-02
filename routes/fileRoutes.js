@@ -1,14 +1,14 @@
 const express = require("express");
+const multer = require("multer");
+
 const {
   saveFileDetails,
-  // updateStatus,
   getAllFiles,
 } = require("../controllers/fileController");
 
 const router = express.Router();
-
-router.post("/", saveFileDetails);
+const upload = multer({ dest: "uploads/" });
+router.post("/", upload.single("file"), saveFileDetails);
 router.get("/", getAllFiles);
-// router.put("/", updateStatus);
 
 module.exports = router;

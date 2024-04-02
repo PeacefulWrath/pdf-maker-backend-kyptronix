@@ -6,8 +6,8 @@ const fileSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    pdf: {
-      type: Buffer,
+    pdf_url: {
+      type: String,
       required: true,
     },
   },
