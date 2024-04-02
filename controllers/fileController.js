@@ -53,10 +53,9 @@ async function uploadToCloudinary(locaFileName, locaFilePath) {
     })
     .then((result) => {
       fs.unlinkSync(locaFilePath);
-
       return {
         message: "Success",
-        url: result.url,
+        url: result.secure_url,
       };
     })
     .catch((error) => {
