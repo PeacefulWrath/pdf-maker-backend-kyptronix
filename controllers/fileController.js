@@ -78,7 +78,7 @@ exports.saveFileDetails = async (req, res) => {
         pdf_url: result.url,
       });
       if (insertedData) {
-        res.status(200).send(insertedData);
+        return res.status(200).send(insertedData);
       } else {
         throw new Error("cannotinsert data in db");
       }
