@@ -1,4 +1,4 @@
-const FileModel = require("../models/fileModel");
+const PdfModel = require("../models/pdfModel");
 const fs = require("fs");
 const cloudinary = require("cloudinary");
 const dotenv = require("dotenv");
@@ -196,14 +196,14 @@ async function uploadToCloudinary(locaFileName, locaFilePath) {
       use_filename: true,
     })
     .then((result) => {
-      // fs.unlinkSync(locaFilePath);
+      fs.unlinkSync(locaFilePath);
       return {
         message: "Success",
         url: result.secure_url,
       };
     })
     .catch((error) => {
-      // fs.unlinkSync(locaFilePath);
+      fs.unlinkSync(locaFilePath);
       console.log("cloudinary error", error);
       return { message: "Fail to upload in cloudinary" };
     });
@@ -211,45 +211,30 @@ async function uploadToCloudinary(locaFileName, locaFilePath) {
 
 exports.saveFileDetails = async (req, res) => {
   try {
-    var locaFilePath = req.file.path;
-    var locaFileName = req.file.filename;
-    var fileType = req.file.originalname.split(".")[1];
+        const pdfsModel = new PdfModel({ ...req.body });
 
-    console.log("ttt", fileType);
+        let getPdfs = [];
+        
+        for (var i = 0; i < req.files.length; i++) {
+          var locaFilePath = req.files[i].path;
+          var locaFileName = req.files[i].filename;
+         
+          var result = await uploadToCloudinary(locaFileName,locaFilePath);
+          getPdfs.push({
+            file_name: locaFileName,
+            url: cryptr.encrypt(result.url)
+          })
+          
+        }
+        
+        pdfsModel.pdfs = getPdfs;
+        const insertedData= await pdfsModel.save();
 
-    if (fileType === "docx" || fileType === "pptx" || fileType === "xlsx") {
-      const result = await uploadToCloudinary(locaFileName, "converted.pdf");
-
-      if (result) {
-        const insertedData = await FileModel.create({
-          file_name: req.file.originalname,
-          pdf_url: cryptr.encrypt(result.url),
-        });
         if (insertedData) {
           return res.status(200).send(insertedData);
         } else {
-          throw new Error("cannotinsert data in db");
+          throw new Error("cannot insert data in db");
         }
-      }
-    }
-
-    if (fileType === "pdf") {
-      const result = await uploadToCloudinary(locaFileName, locaFilePath);
-
-      if (result) {
-        const insertedData = await FileModel.create({
-          file_name: req.file.originalname,
-          pdf_url: cryptr.encrypt(result.url),
-        });
-        if (insertedData) {
-          return res.status(200).send(insertedData);
-        } else {
-          throw new Error("cannotinsert data in db");
-        }
-      }
-    }
-
-    throw new Error("error in saveFileDetails function ");
   } catch (error) {
     res.status(400).send({ message: error.message });
   }
@@ -257,13 +242,17 @@ exports.saveFileDetails = async (req, res) => {
 
 exports.getAllFiles = async (req, res) => {
   try {
-    const filesData = await FileModel.find({});
+    const pdfsData = await PdfModel.find({});
 
-    if (filesData) {
+    if (pdfsData) {
       const tempData = [];
-      filesData.forEach((file) => {
-        file.pdf_url = cryptr.decrypt(file?.pdf_url);
-        tempData.push(file);
+      pdfsData.forEach((pdf) => {
+        let tempUrls=[]
+        pdf.pdf_url.forEach((url)=>{
+           tempUrls.push( cryptr.decrypt(url))
+        }) 
+        pdf.pdf_url=tempUrls
+        tempData.push(pdf);
       });
       res.status(201).send(tempData);
     }
