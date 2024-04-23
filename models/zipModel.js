@@ -2,17 +2,20 @@ const mongoose = require("mongoose");
 
 const zipSchema = new mongoose.Schema(
   {
-    file_name: {
-      type: String,
-      
-    },
-    zip_url: [{
-      type: String,
+    zips:
+      [{
+        file_name: {
+          type: String,
+        },
+        url:{
+        type: String,
+        },
+        zip_downloadable:{
+          type: Boolean,
+        }
+      }]
     
-    }],
-    downloadable:{
-      type: Boolean,
-    }
+    
   },
   { timestamps: true }
 );

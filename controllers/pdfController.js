@@ -243,17 +243,20 @@ exports.saveFileDetails = async (req, res) => {
 exports.getAllFiles = async (req, res) => {
   try {
     const pdfsData = await PdfModel.find({});
-
+console.log(pdfsData)
     if (pdfsData) {
       const tempData = [];
-      pdfsData.forEach((pdf) => {
+      pdfsData?.pdfs?.forEach((pdf) => {
         let tempUrls=[]
-        pdf.pdf_url.forEach((url)=>{
-           tempUrls.push( cryptr.decrypt(url))
+        pdf.url.forEach((url)=>{
+           tempUrls.push(cryptr.decrypt(url))
         }) 
-        pdf.pdf_url=tempUrls
-        tempData.push(pdf);
+        pdf.url=tempUrls
       });
+      pdfsData.forEach((pdf)=>{
+        tempData.push(pdf);
+      })
+    
       res.status(201).send(tempData);
     }
   } catch (error) {

@@ -2,14 +2,16 @@ const mongoose = require("mongoose");
 
 const linkSchema = new mongoose.Schema(
   {
-    link_preview_name:{
-        type: String,
-        required: true,
-    },
-    link_url: {
-      type: String,
-      required: true,
-    }    
+    links: [
+      {
+        link_preview_name: {
+          type: String,
+        },
+        link_url: {
+          type: String,
+        }
+      }
+    ]
   },
   { timestamps: true }
 );
