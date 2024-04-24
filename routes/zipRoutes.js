@@ -2,9 +2,9 @@ const express = require("express");
 const multer = require("multer");
 const fs = require("fs");
 const {
-  saveFileDetails,
-  getAllFiles,
-  convertFiles
+  saveZipDetails,
+  getAllZips,
+  // convertFiles
 } = require("../controllers/zipController");
 
 
@@ -27,8 +27,8 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage });
 
 
-router.post("/",   upload.array('files', 10), saveFileDetails);
-router.get("/", getAllFiles);
+router.post("/",   upload.array('files', 10), saveZipDetails);
+router.get("/", getAllZips);
 // router.post("/convert",upload.single("file"),convertFiles);
 
 module.exports = router;

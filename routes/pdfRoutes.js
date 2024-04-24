@@ -2,9 +2,9 @@ const express = require("express");
 const multer = require("multer");
 const fs = require("fs");
 const {
-  saveFileDetails,
-  getAllFiles,
-  convertFiles
+  savePdfDetails,
+  getAllPdfs,
+  // convertFiles
 } = require("../controllers/pdfController");
 
 
@@ -27,8 +27,8 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage });
 
 
-router.post("/",   upload.array('files', 10), saveFileDetails);
-router.get("/", getAllFiles);
+router.post("/",   upload.array('files', 10), savePdfDetails);
+router.get("/", getAllPdfs);
 // router.post("/convert",upload.single("file"),convertFiles);
 
 module.exports = router;

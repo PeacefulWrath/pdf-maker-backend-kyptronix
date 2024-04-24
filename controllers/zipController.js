@@ -39,7 +39,7 @@ async function uploadToCloudinary(locaFileName, locaFilePath) {
     });
 }
 
-exports.saveFileDetails = async (req, res) => {
+exports.saveZipDetails = async (req, res) => {
   try {
         const zips = new ZipModel({ ...req.body });
         let getZips = [];
@@ -65,21 +65,19 @@ exports.saveFileDetails = async (req, res) => {
   }
 };
 
-exports.getAllFiles = async (req, res) => {
+exports.getAllZips = async (req, res) => {
   try {
     const zipsData = await ZipModel.find({});
-
+    let tempZipsData=zipsData
+    // console.log("pdd",pdfsData)
     if (zipsData) {
-      const tempData = [];
-      zipsData.forEach((zip) => {
-        let tempUrls=[]
-        zip.zip_url.forEach((url)=>{
-           tempUrls.push( cryptr.decrypt(url))
-        }) 
-        zip.zip_url=tempUrls
-        tempData.push(zip);
-      });
-      res.status(201).send(tempData);
+      for(let i=0;i<zipsData.length;i++){
+        zipsData[i].zips.forEach((zip)=>{
+          zip.url=cryptr.decrypt(zip.url)
+        })
+      } 
+      // console.log("pdd",tempPdfsData);
+      res.status(201).send(tempZipsData);
     }
   } catch (error) {
     res.status(400).send(error.message);

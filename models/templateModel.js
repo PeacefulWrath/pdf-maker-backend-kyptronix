@@ -11,15 +11,15 @@ const templateSchema = new mongoose.Schema(
         template_desc:{
             type: String,
         },
-        pdfs:{
+        template_pdfs:{
             type: mongoose.ObjectId,
             ref: "PdfModel",
         },
-        zips:{
+        template_zips:{
             type: mongoose.ObjectId,
             ref: "ZipModel",
         },
-        links:{
+        template_links:{
             type: mongoose.ObjectId,
             ref: "LinkModel",
         }

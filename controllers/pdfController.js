@@ -209,7 +209,7 @@ async function uploadToCloudinary(locaFileName, locaFilePath) {
     });
 }
 
-exports.saveFileDetails = async (req, res) => {
+exports.savePdfDetails = async (req, res) => {
   try {
         const pdfsModel = new PdfModel({ ...req.body });
 
@@ -240,171 +240,166 @@ exports.saveFileDetails = async (req, res) => {
   }
 };
 
-exports.getAllFiles = async (req, res) => {
+exports.getAllPdfs = async (req, res) => {
   try {
     const pdfsData = await PdfModel.find({});
-console.log(pdfsData)
+    let tempPdfsData=pdfsData
+    // console.log("pdd",pdfsData)
     if (pdfsData) {
-      const tempData = [];
-      pdfsData?.pdfs?.forEach((pdf) => {
-        let tempUrls=[]
-        pdf.url.forEach((url)=>{
-           tempUrls.push(cryptr.decrypt(url))
-        }) 
-        pdf.url=tempUrls
-      });
-      pdfsData.forEach((pdf)=>{
-        tempData.push(pdf);
-      })
-    
-      res.status(201).send(tempData);
+      for(let i=0;i<pdfsData.length;i++){
+        pdfsData[i].pdfs.forEach((pdf)=>{
+          pdf.url=cryptr.decrypt(pdf.url)
+        })
+      } 
+      // console.log("pdd",tempPdfsData);
+      res.status(201).send(tempPdfsData);
     }
   } catch (error) {
     res.status(400).send(error.message);
   }
 };
 
-exports.convertFiles = async (req, res) => {
-  try {
-    // Source DOC or DOCX file
-    const SourceFile = `./uploads/${req.file.path.split("\\")[1]}`;
-    // Destination PDF file name
-    const DestinationFile = "./converted.pdf";
+// exports.convertFiles = async (req, res) => {
+//   try {
+//     // Source DOC or DOCX file
+//     const SourceFile = `./uploads/${req.file.path.split("\\")[1]}`;
+//     // Destination PDF file name
+//     const DestinationFile = "./converted.pdf";
 
-    // 1. RETRIEVE PRESIGNED URL TO UPLOAD FILE.
-    getPresignedUrl(CONVERTER_API_KEY, SourceFile)
-      .then(([uploadUrl, uploadedFileUrl]) => {
-        // 2. UPLOAD THE FILE TO CLOUD.
-        uploadFile(CONVERTER_API_KEY, SourceFile, uploadUrl)
-          .then(() => {
-            // 3. CONVERT UPLOADED DOC (DOCX) FILE TO PDF
-            convertDocToPdf(
-              CONVERTER_API_KEY,
-              uploadedFileUrl,
-              DestinationFile
-            );
-          })
-          .catch((e) => {
-            console.log(e);
-          });
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+//     // 1. RETRIEVE PRESIGNED URL TO UPLOAD FILE.
+//     getPresignedUrl(CONVERTER_API_KEY, SourceFile)
+//       .then(([uploadUrl, uploadedFileUrl]) => {
+//         // 2. UPLOAD THE FILE TO CLOUD.
+//         uploadFile(CONVERTER_API_KEY, SourceFile, uploadUrl)
+//           .then(() => {
+//             // 3. CONVERT UPLOADED DOC (DOCX) FILE TO PDF
+//             convertDocToPdf(
+//               CONVERTER_API_KEY,
+//               uploadedFileUrl,
+//               DestinationFile
+//             );
+//           })
+//           .catch((e) => {
+//             console.log(e);
+//           });
+//       })
+//       .catch((e) => {
+//         console.log(e);
+//       });
 
-    function getPresignedUrl(apiKey, localFile) {
-      return new Promise((resolve) => {
-        // Prepare request to `Get Presigned URL` API endpoint
-        let queryPath = `/v1/file/upload/get-presigned-url?contenttype=application/octet-stream&name=${path.basename(
-          SourceFile
-        )}`;
-        let reqOptions = {
-          host: "api.pdf.co",
-          path: encodeURI(queryPath),
-          headers: { "x-api-key": CONVERTER_API_KEY },
-        };
-        // Send request
-        https
-          .get(reqOptions, (response) => {
-            response.on("data", (d) => {
-              let data = JSON.parse(d);
-              if (data.error == false) {
-                // Return presigned url we received
-                resolve([data.presignedUrl, data.url]);
-              } else {
-                // Service reported error
-                console.log("getPresignedUrl(): " + data.message);
-              }
-            });
-          })
-          .on("error", (e) => {
-            // Request error
-            console.log("getPresignedUrl(): " + e);
-          });
-      });
-    }
+//     function getPresignedUrl(apiKey, localFile) {
+//       return new Promise((resolve) => {
+//         // Prepare request to `Get Presigned URL` API endpoint
+//         let queryPath = `/v1/file/upload/get-presigned-url?contenttype=application/octet-stream&name=${path.basename(
+//           SourceFile
+//         )}`;
+//         let reqOptions = {
+//           host: "api.pdf.co",
+//           path: encodeURI(queryPath),
+//           headers: { "x-api-key": CONVERTER_API_KEY },
+//         };
+//         // Send request
+//         https
+//           .get(reqOptions, (response) => {
+//             response.on("data", (d) => {
+//               let data = JSON.parse(d);
+//               if (data.error == false) {
+//                 // Return presigned url we received
+//                 resolve([data.presignedUrl, data.url]);
+//               } else {
+//                 // Service reported error
+//                 console.log("getPresignedUrl(): " + data.message);
+//               }
+//             });
+//           })
+//           .on("error", (e) => {
+//             // Request error
+//             console.log("getPresignedUrl(): " + e);
+//           });
+//       });
+//     }
 
-    function uploadFile(apiKey, localFile, uploadUrl) {
-      return new Promise((resolve) => {
-        fs.readFile(SourceFile, (err, data) => {
-          request(
-            {
-              method: "PUT",
-              url: uploadUrl,
-              body: data,
-              headers: {
-                "Content-Type": "application/octet-stream",
-              },
-            },
-            (err, res, body) => {
-              if (!err) {
-                resolve();
-              } else {
-                console.log("uploadFile() request error: " + e);
-              }
-            }
-          );
-        });
-      });
-    }
+//     function uploadFile(apiKey, localFile, uploadUrl) {
+//       return new Promise((resolve) => {
+//         fs.readFile(SourceFile, (err, data) => {
+//           request(
+//             {
+//               method: "PUT",
+//               url: uploadUrl,
+//               body: data,
+//               headers: {
+//                 "Content-Type": "application/octet-stream",
+//               },
+//             },
+//             (err, res, body) => {
+//               if (!err) {
+//                 resolve();
+//               } else {
+//                 console.log("uploadFile() request error: " + e);
+//               }
+//             }
+//           );
+//         });
+//       });
+//     }
 
-    function convertDocToPdf(apiKey, uploadedFileUrl, destinationFile) {
-      // Prepare URL for `DOC To PDF` API call
-      let queryPath = `/v1/pdf/convert/from/doc`;
+//     function convertDocToPdf(apiKey, uploadedFileUrl, destinationFile) {
+//       // Prepare URL for `DOC To PDF` API call
+//       let queryPath = `/v1/pdf/convert/from/doc`;
 
-      // JSON payload for api request
-      var jsonPayload = JSON.stringify({
-        name: path.basename(destinationFile),
-        url: uploadedFileUrl,
-      });
+//       // JSON payload for api request
+//       var jsonPayload = JSON.stringify({
+//         name: path.basename(destinationFile),
+//         url: uploadedFileUrl,
+//       });
 
-      var reqOptions = {
-        host: "api.pdf.co",
-        method: "POST",
-        path: queryPath,
-        headers: {
-          "x-api-key": apiKey,
-          "Content-Type": "application/json",
-          "Content-Length": Buffer.byteLength(jsonPayload, "utf8"),
-        },
-      };
+//       var reqOptions = {
+//         host: "api.pdf.co",
+//         method: "POST",
+//         path: queryPath,
+//         headers: {
+//           "x-api-key": apiKey,
+//           "Content-Type": "application/json",
+//           "Content-Length": Buffer.byteLength(jsonPayload, "utf8"),
+//         },
+//       };
 
-      // Send request
-      var postRequest = https
-        .request(reqOptions, (response) => {
-          response.on("data", (d) => {
-            response.setEncoding("utf8");
-            // Parse JSON response
-            let data = JSON.parse(d);
-            if (data.error == false) {
-              // Download PDF file
-              var file = fs.createWriteStream(destinationFile);
-              https.get(data.url, (response2) => {
-                response2.pipe(file).on("close", () => {
-                  console.log(
-                    `Generated PDF file saved as "${destinationFile}" file.`
-                  );
-                  return res
-                    .status(201)
-                    .send({ message: "file converted successfully" });
-                });
-              });
-            } else {
-              // Service reported error
-              console.log("readBarcodes(): " + data.message);
-            }
-          });
-        })
-        .on("error", (e) => {
-          // Request error
-          console.log("readBarcodes(): " + e);
-        });
+//       // Send request
+//       var postRequest = https
+//         .request(reqOptions, (response) => {
+//           response.on("data", (d) => {
+//             response.setEncoding("utf8");
+//             // Parse JSON response
+//             let data = JSON.parse(d);
+//             if (data.error == false) {
+//               // Download PDF file
+//               var file = fs.createWriteStream(destinationFile);
+//               https.get(data.url, (response2) => {
+//                 response2.pipe(file).on("close", () => {
+//                   console.log(
+//                     `Generated PDF file saved as "${destinationFile}" file.`
+//                   );
+//                   return res
+//                     .status(201)
+//                     .send({ message: "file converted successfully" });
+//                 });
+//               });
+//             } else {
+//               // Service reported error
+//               console.log("readBarcodes(): " + data.message);
+//             }
+//           });
+//         })
+//         .on("error", (e) => {
+//           // Request error
+//           console.log("readBarcodes(): " + e);
+//         });
 
-      // Write request data
-      postRequest.write(jsonPayload);
-      postRequest.end();
-    }
-  } catch (err) {
-    res.send({ message: "failed to convert the file" });
-  }
-};
+//       // Write request data
+//       postRequest.write(jsonPayload);
+//       postRequest.end();
+//     }
+//   } catch (err) {
+//     res.send({ message: "failed to convert the file" });
+//   }
+// };

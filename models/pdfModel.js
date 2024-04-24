@@ -6,6 +6,7 @@ const pdfSchema = new mongoose.Schema(
     pdfs: [{
       file_name: {
         type: String,
+        // unique:true
       },
       url:{
       type: String,

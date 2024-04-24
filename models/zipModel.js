@@ -6,6 +6,7 @@ const zipSchema = new mongoose.Schema(
       [{
         file_name: {
           type: String,
+          // unique:true
         },
         url:{
         type: String,

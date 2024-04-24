@@ -82,10 +82,13 @@ async function uploadZipToCloudinary(locaFileName, locaFilePath) {
     });
 }
 
+
 exports.saveTemplates = async (req, res) => {
   try {
 
     // console.log("loop", req.body)
+
+    
     const pdfsModel = new PdfModel();
     const templateModel = new TemplateModel()
     const zipsModel = new ZipModel();
@@ -94,40 +97,51 @@ exports.saveTemplates = async (req, res) => {
     let getPdfs = [];
     let getZips = [];
     let getLinks = []
-
+   
+      
+    let waterMarkInd=0;
+    let logoInd=0;
+    let pageNoInd=0;
+    let pdfDownloadableInd=0;
+    let zipDownloadableInd=0;
 
     for (var i = 0; i < req.files.length; i++) {
+      
       var locaFilePath = req.files[i].path;
       var locaFileName = req.files[i].filename;
       let imageExtensions = ['png', 'jpg', 'jpeg', 'gif'];
 
       if (locaFileName.split(".")[1] === "pdf") {
-        var result = await uploadPdfToCloudinary(locaFileName, locaFilePath);
-        getPdfs.push({
+        var resultPdf = await uploadPdfToCloudinary(locaFileName, locaFilePath);
+        if(resultPdf){
+         getPdfs.push({
           file_name: locaFileName,
-          url: cryptr.encrypt(result.url),
-          watermark: Array.isArray(req.body.watermark) ? req.body.watermark[i] : req.body.watermark,
-          top_left_logo: Array.isArray(req.body.top_left_logo) ? req.body.top_left_logo[i] : req.body.top_left_logo,
-          bottom_right_page_no: Array.isArray(req.body.bottom_right_page_no) ? req.body.bottom_right_page_no[i] : req.body.bottom_right_page_no,
-          pdf_downloadable: Array.isArray(req.body.pdf_downloadable) ? req.body.pdf_downloadable[i] : req.body.pdf_downloadable
+          url: cryptr.encrypt(resultPdf.url),
+          watermark: Array.isArray(req.body.watermark) ? (waterMarkInd<req.body.watermark.length ? req.body.watermark[waterMarkInd++]:" ") : req.body.watermark,
+          top_left_logo:  Array.isArray(req.body.top_left_logo) ? (logoInd<req.body.top_left_logo.length ? req.body.top_left_logo[logoInd++]:" ") : req.body.top_left_logo,
+          bottom_right_page_no:  Array.isArray(req.body.bottom_right_page_no) ? (pageNoInd<req.body.bottom_right_page_no.length ? req.body.bottom_right_page_no[pageNoInd++]:" ") : req.body.bottom_right_page_no,
+          pdf_downloadable:  Array.isArray(req.body.pdf_downloadable) ? (pdfDownloadableInd<req.body.pdf_downloadable.length ? req.body.pdf_downloadable[pdfDownloadableInd++]:" ") : req.body.pdf_downloadable,
         })
+      }
       }
       if (imageExtensions.includes(locaFileName.split(".")[1])) {
-        var result = await uploadImageToCloudinary(locaFileName, locaFilePath);
-        templateModel.template_image = result.url
+        var resultImage = await uploadImageToCloudinary(locaFileName, locaFilePath);
+        if(resultImage){
+        templateModel.template_image = resultImage.url
+        }
       }
       if (locaFileName.split(".")[1] === "zip") {
-        var result = await uploadZipToCloudinary(locaFileName, locaFilePath);
+        var resultZip = await uploadZipToCloudinary(locaFileName, locaFilePath);
+        if(resultZip){
         getZips.push({
           file_name: locaFileName,
-          url: cryptr.encrypt(result.url),
-          zip_downloadable: Array.isArray(req.body.zip_downloadable) ? req.body.zip_downloadable[i] : req.body.zip_downloadable
+          url: cryptr.encrypt(resultZip.url),
+          zip_downloadable: Array.isArray(req.body.zip_downloadable) ? (zipDownloadableInd<req.body.zip_downloadable.length ? req.body.zip_downloadable[zipDownloadableInd++]:" ") : req.body.zip_downloadable,
         })
       }
-
+      }
     }
    
-
     if (req.body.link_preview_name && Array.isArray(req.body.link_preview_name)) {
       for (let i = 0; i < req.body.link_preview_name.length; i++) {
         getLinks.push({link_preview_name  : req.body.link_preview_name[i] })
@@ -140,14 +154,15 @@ exports.saveTemplates = async (req, res) => {
     if (req.body.link_url && Array.isArray(req.body.link_url)) {
       for (let i = 0; i < req.body.link_url.length; i++) {
 
-        getLinks.push({link_url :req.body.link_url[i] })
+        getLinks[i].link_url = req.body.link_url[i] 
 
       }
     } else if (req.body.link_url) {
-      getLinks.push({link_url :req.body.link_url})
+      getLinks[0].link_url = req.body.link_url 
     }
 
-    // console.log("gll",getLinks)
+    // console.log("gpdfs",getPdfs)
+    // console.log("gzips",getZips)
 
     pdfsModel.pdfs = getPdfs;
     zipsModel.zips = getZips;
@@ -160,14 +175,15 @@ exports.saveTemplates = async (req, res) => {
 
     templateModel.template_name = req.body.template_name
     templateModel.template_desc = req.body.template_desc
-    templateModel.pdfs = insertedPdfsData._id
-    templateModel.zips = insertedZipsData._id
-    templateModel.links = insertedLinksData._id
+    templateModel.template_pdfs = insertedPdfsData._id
+    templateModel.template_zips = insertedZipsData._id
+    templateModel.template_links = insertedLinksData._id
 
     const insertedTemplateData = await templateModel.save();
-
-    if (insertedTemplateData) {
-      return res.status(200).send(insertedTemplateData);
+    const populatedData=await TemplateModel.find({_id:insertedTemplateData._id}).populate("template_pdfs").populate("template_zips").populate("template_links")
+    console.log("pop",populatedData)
+    if (populatedData) {
+      return res.status(200).send(populatedData);
     } else {
       throw new Error("cannot insert data in db");
     }
@@ -183,7 +199,7 @@ exports.getTemplates = async (req, res) => {
 
     
 
-    const allTemplates=await TemplateModel.find({}).populate("pdfs").populate("zips").populate("links")
+    const allTemplates=await TemplateModel.find({}).populate("template_pdfs").populate("template_zips").populate("template_links")
 
     if(allTemplates){
       return res.status(200).send(allTemplates)
