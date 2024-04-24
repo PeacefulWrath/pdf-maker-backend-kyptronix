@@ -183,7 +183,7 @@ exports.saveTemplates = async (req, res) => {
     const populatedData=await TemplateModel.find({_id:insertedTemplateData._id}).populate("template_pdfs").populate("template_zips").populate("template_links")
     // console.log("pop",populatedData)
     if (populatedData) {
-      return res.status(200).send(populatedData[0]);
+      return res.status(200).send(populatedData);
     } else {
       throw new Error("cannot insert data in db");
     }
