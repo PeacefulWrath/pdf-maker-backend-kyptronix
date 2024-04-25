@@ -4,6 +4,7 @@ const fs = require("fs");
 const {
   saveTemplates,
   getTemplates,
+  updateTemplates
  
 } = require("../controllers/templateController");
 
@@ -29,6 +30,7 @@ var upload = multer({ storage: storage });
 
 router.post("/",   upload.array('files', 10), saveTemplates);
 router.get("/", getTemplates);
-// router.post("/convert",upload.single("file"),convertFiles);
+router.put("/",   upload.array('files', 10), updateTemplates);
+
 
 module.exports = router;
