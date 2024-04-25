@@ -505,3 +505,22 @@ exports.updateTemplates = async (req, res) => {
     res.status(400).send({ message: error.message });
   }
 };
+
+exports.deleteTemplates=async(req,res)=>{
+try{
+  const templateId = req.body.templateId;
+
+     const deletedData=await TemplateModel.findOneAndDelete(
+      {_id:{$eq:templateId}}
+    )
+
+    if(deletedData){
+      return res.status(200).send({message:"template deleted successfully"})
+    }else{
+      throw new Error("cannot delete template")
+    }
+
+}catch (error) {
+    res.status(400).send({ message: error.message });
+  }
+}
