@@ -262,14 +262,7 @@ exports.updateTemplates = async (req, res) => {
       Array.isArray(req.body.db_pdf_bottom_right_page_no) &&
       req.body.db_pdf_pdf_downloadable &&
       Array.isArray(req.body.db_pdf_pdf_downloadable)
-    ) {
-      if (
-        ((((req.body.db_pdf_url.length == req.body.db_pdf_watermark.length) ==
-          req.body.db_pdf_top_left_logo.length) ==
-          req.body.db_pdf_bottom_right_page_no.length) ==
-          req.body.db_pdf_pdf_downloadable.length) ==
-        req.body.db_pdf_id.length
-      ) {
+    ) { 
         for (let i = 0; i < req.body.db_pdf_url.length; i++) {
           allPdfs.push({
             _id: req.body.db_pdf_id[i],
@@ -278,9 +271,8 @@ exports.updateTemplates = async (req, res) => {
             watermark: req.body.db_pdf_watermark[i],
             top_left_logo: req.body.db_pdf_top_left_logo[i],
             bottom_right_page_no: req.body.db_pdf_bottom_right_page_no[i],
-            pdf_downloadable: req.body.db_pdf_pdf_downloadable,
-          });
-        }
+            pdf_downloadable: req.body.db_pdf_pdf_downloadable[i],
+          }); 
       }
     } else if (
       req.body.db_pdf_id &&
@@ -308,11 +300,7 @@ exports.updateTemplates = async (req, res) => {
       req.body.db_zip_zip_downloadable &&
       Array.isArray(req.body.db_zip_zip_downloadable)
     ) {
-      if (
-        (req.body.db_zip_url.length ==
-          req.body.db_zip_zip_downloadable.length) ==
-        req.body.db_zip_id.length
-      ) {
+      
         for (let i = 0; i < req.body.db_zip_url.length; i++) {
           allZips.push({
             _id: req.body.db_zip_id[i],
@@ -320,7 +308,7 @@ exports.updateTemplates = async (req, res) => {
             file_name: req.body.zip_file_name[i],
             pdf_downloadable: req.body.db_zip_zip_downloadable[i],
           });
-        }
+        
       }
     } else if (
       req.body.db_zip_id &&
@@ -331,7 +319,7 @@ exports.updateTemplates = async (req, res) => {
         _id: req.body.db_zip_id,
         url: cryptr.encrypt(req.body.db_zip_url),
         file_name: req.body.db_zip_file_name,
-        pdf_downloadable: req.body.db_zip_zip_downloadable,
+        zip_downloadable: req.body.db_zip_zip_downloadable,
       });
     }
 
@@ -341,16 +329,14 @@ exports.updateTemplates = async (req, res) => {
       req.body.db_link_url &&
       Array.isArray(req.body.db_link_url)
     ) {
-      if (
-        req.body.db_link_preview_name.length === req.body.db_link_url.length
-      ) {
+      
         for (let i = 0; i < req.body.db_link_preview_name.length; i++) {
           allLinks.push({
             _id: req.body.db_link_id[i],
             link_preview_name: req.body.db_link_preview_name[i],
             link_url: req.body.db_link_url[i],
           });
-        }
+        
       }
     } else if (req.body.db_link_preview_name && req.body.db_link_url) {
       allLinks.push({
@@ -468,6 +454,10 @@ exports.updateTemplates = async (req, res) => {
 
     let templateName = req.body.template_name;
     let templateDesc = req.body.template_desc;
+
+
+
+  
 
     req.body = {};
 
