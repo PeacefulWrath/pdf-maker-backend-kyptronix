@@ -1,0 +1,56 @@
+Segment,Country, Product , Discount Band ,Units Sold, Manufacturing Price , Sale Price , Gross Sales 
+Government,Canada, Carretera , None ,1618.5,$3.00 ,$20.00 ,"$32,370.00 "
+Government,Germany, Carretera , None ,1321,$3.00 ,$20.00 ,"$26,420.00 "
+Midmarket,France, Carretera , None ,2178,$3.00 ,$15.00 ,"$32,670.00 "
+Midmarket,Germany, Carretera , None ,888,$3.00 ,$15.00 ,"$13,320.00 "
+Midmarket,Mexico, Carretera , None ,2470,$3.00 ,$15.00 ,"$37,050.00 "
+Government,Germany, Carretera , None ,1513,$3.00 ,$350.00 ," $5,29,550.00 "
+Midmarket,Germany, Montana , None ,921,$5.00 ,$15.00 ,"$13,815.00 "
+Channel Partners,Canada, Montana , None ,2518,$5.00 ,$12.00 ,"$30,216.00 "
+Government,France, Montana , None ,1899,$5.00 ,$20.00 ,"$37,980.00 "
+Channel Partners,Germany, Montana , None ,1545,$5.00 ,$12.00 ,"$18,540.00 "
+Midmarket,Mexico, Montana , None ,2470,$5.00 ,$15.00 ,"$37,050.00 "
+Enterprise,Canada, Montana , None ,2665.5,$5.00 ,$125.00 ," $3,33,187.50 "
+Small Business,Mexico, Montana , None ,958,$5.00 ,$300.00 ," $2,87,400.00 "
+Government,Germany, Montana , None ,2146,$5.00 ,$7.00 ,"$15,022.00 "
+Enterprise,Canada, Montana , None ,345,$5.00 ,$125.00 ,"$43,125.00 "
+Midmarket,United States of America, Montana , None ,615,$5.00 ,$15.00 ,"$9,225.00 "
+Government,Canada, Paseo , None ,292,$10.00 ,$20.00 ,"$5,840.00 "
+Midmarket,Mexico, Paseo , None ,974,$10.00 ,$15.00 ,"$14,610.00 "
+Channel Partners,Canada, Paseo , None ,2518,$10.00 ,$12.00 ,"$30,216.00 "
+Government,Germany, Paseo , None ,1006,$10.00 ,$350.00 ," $3,52,100.00 "
+Channel Partners,Germany, Paseo , None ,367,$10.00 ,$12.00 ,"$4,404.00 "
+Government,Mexico, Paseo , None ,883,$10.00 ,$7.00 ,"$6,181.00 "
+Midmarket,France, Paseo , None ,549,$10.00 ,$15.00 ,"$8,235.00 "
+Small Business,Mexico, Paseo , None ,788,$10.00 ,$300.00 ," $2,36,400.00 "
+Midmarket,Mexico, Paseo , None ,2472,$10.00 ,$15.00 ,"$37,080.00 "
+Government,United States of America, Paseo , None ,1143,$10.00 ,$7.00 ,"$8,001.00 "
+Government,Canada, Paseo , None ,1725,$10.00 ,$350.00 ," $6,03,750.00 "
+Channel Partners,United States of America, Paseo , None ,912,$10.00 ,$12.00 ,"$10,944.00 "
+Midmarket,Canada, Paseo , None ,2152,$10.00 ,$15.00 ,"$32,280.00 "
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,1. Simplyfy ther UI,,
+,,,,,2. Corrrrrect the company name in Logo,,
+,,,,,3. 2 meeting a week Tuesday 6pm and Friday 6 pm,,
+,,,,,4. Figure out Upload PDF and Encryption watermark ,,
