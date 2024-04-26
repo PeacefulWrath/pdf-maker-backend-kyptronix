@@ -249,6 +249,8 @@ exports.updateTemplates = async (req, res) => {
     let pdfTitleInd = 0;
     let zipTitleInd = 0;
 
+
+    // update old files
     if (
       req.body.db_pdf_id &&
       Array.isArray(req.body.db_pdf_id) &&
@@ -305,8 +307,8 @@ exports.updateTemplates = async (req, res) => {
           allZips.push({
             _id: req.body.db_zip_id[i],
             url: cryptr.encrypt(req.body.db_zip_url[i]),
-            file_name: req.body.zip_file_name[i],
-            pdf_downloadable: req.body.db_zip_zip_downloadable[i],
+            file_name: req.body.db_zip_file_name[i],
+            zip_downloadable: req.body.db_zip_zip_downloadable[i],
           });
         
       }
@@ -346,6 +348,7 @@ exports.updateTemplates = async (req, res) => {
       });
     }
 
+    // new file addition
     for (var i = 0; i < req.files.length; i++) {
       var locaFilePath = req.files[i].path;
       var locaFileName = req.files[i].filename;
@@ -434,6 +437,7 @@ exports.updateTemplates = async (req, res) => {
       getLinks[0].link_url = req.body.link_url;
     }
 
+    // marging
     if (getPdfs.length !== 0) {
       getPdfs.forEach((gp) => {
         allPdfs.push(gp);
@@ -454,15 +458,27 @@ exports.updateTemplates = async (req, res) => {
 
     let templateName = req.body.template_name;
     let templateDesc = req.body.template_desc;
+    let templateImage=req.body.template_image
 
 
 
-  
+    // console.log("image",req.body.template_image)
+
 
     req.body = {};
 
+    if(templateName){
     req.body.template_name = templateName;
+    }
+    if(templateDesc){
     req.body.template_desc = templateDesc;
+    }
+    if(templateImage){
+    req.body.template_image =templateImage;
+    }
+    
+
+
 
     if (allPdfs.length > 0) {
       req.body.template_pdfs = allPdfs;
@@ -476,6 +492,8 @@ exports.updateTemplates = async (req, res) => {
       req.body.template_links = allLinks;
     }
 
+    // console.log("rrr",req.body)
+    
     const updatedTemplateData = await TemplateModel.findOneAndUpdate(
       { _id: { $eq: templateId } },
       {
