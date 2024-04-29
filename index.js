@@ -16,7 +16,7 @@ const PORT = process.env.PORT;
 
 
 app.use("/api/template", templateRoutes);
-app.use("/api/mcq", mcqRoutes);
+app.use("/api/mcq-template", mcqRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

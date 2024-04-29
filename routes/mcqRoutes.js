@@ -2,10 +2,12 @@ const express = require("express");
 const multer = require("multer");
 const fs = require("fs");
 const {
-    saveMcqs,
-    updateMcqs
+    saceMcqTemplates,
+    updateMcqTemplates,
+    getMcqTemplates,
+    saveMcqTemplates
 } = require("../controllers/mcqController");
-
+const path=require("path")
 
 const router = express.Router();
 
@@ -26,7 +28,8 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage });
 
 
-router.post("/", upload.array('files') , saveMcqs);
-router.put("/", upload.array('files') , updateMcqs);
+router.post("/", upload.array('files')  , saveMcqTemplates);
+router.put("/", upload.array('files') , updateMcqTemplates);
+router.get("/",getMcqTemplates)
 
 module.exports = router;
