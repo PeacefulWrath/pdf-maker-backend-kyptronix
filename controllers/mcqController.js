@@ -129,10 +129,17 @@ exports.saveMcqTemplates = async (req, res) => {
         }
 
         if (mcqModel.mcqs[i].options_type === "image") {
-          var locaFilePath = req.files.answers[i].path;
-          var locaFileName = req.files.answers[i].filename;
+          var locaFilePath =""
+          var locaFileName =""
+          // console.log("132",req.files)
+          if(i>req.files.answers.length-1){
+            locaFilePath = req.files.answers[i-1].path;
+            locaFileName = req.files.answers[i-1].filename;
+          }else{
+            locaFilePath = req.files.answers[i].path;
+            locaFileName = req.files.answers[i].filename;
+          }
           let imageExtensions = ["png", "jpg", "jpeg", "gif"];
-
           if (imageExtensions.includes(locaFileName.split(".")[1])) {
             var resultImage = await uploadImageToCloudinary(
               locaFileName,
@@ -158,7 +165,7 @@ exports.saveMcqTemplates = async (req, res) => {
       });
       mcqModel.mcqs[0].question = req.body.question;
       if (req.body.options_type === "text") {
-        mcqModel.mcqs[0].answer = req.body.answer_text;
+        mcqModel.mcqs[0].answer = JSON.parse(req.body.answer_text)[0];;
       }
 
       if (req.body.options_type === "image") {
