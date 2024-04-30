@@ -12,9 +12,12 @@ const mcqSchema = new mongoose.Schema(
       options_type: {
         type: String
       },
-      // total_options:{
-      //    type: String
-      // },
+      mark:{
+        type:Number
+      },
+      explaination:{
+        type: String
+      },
       options: [{
         type: String,
       }],
