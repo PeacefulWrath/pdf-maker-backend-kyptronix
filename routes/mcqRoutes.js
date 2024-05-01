@@ -39,7 +39,20 @@ router.post(
   ]),
   saveMcqTemplates
 );
-router.put("/", upload.array("files"), updateMcqTemplates);
+router.put("/", upload.fields([
+  {
+    name: "db_options",
+  },
+  {
+    name: "db_answers",
+  },
+  {
+    name: "options",
+  },
+  {
+    name: "answers",
+  },
+]), updateMcqTemplates);
 router.get("/", getMcqTemplates);
 
 module.exports = router;
