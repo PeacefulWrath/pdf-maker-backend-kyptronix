@@ -208,7 +208,23 @@ exports.updateMcqTemplates = async (req, res) => {
   try {
     console.log("update")
     console.log(JSON.parse(req.body.updated_data))
-    res.send([])
+    // res.send([])
+    McqModel.paper_name=req.body.paper_name
+    const updatedTemplateData = await McqModel.findOneAndUpdate(
+      { _id: { $eq: req.body.mcqDocId } },
+      {
+        ...req.body,
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (updatedTemplateData) {
+      return res.status(200).send(updatedTemplateData);
+    } else {
+      throw new Error("cannot update the template");
+    }
   } catch (error) {
     return res.status(400).send({ message: error.message });
   }
