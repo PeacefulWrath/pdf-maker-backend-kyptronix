@@ -2,7 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const fs = require("fs");
 const {
-  saceMcqTemplates,
+  deleteMcqTemplates,
   updateMcqTemplates,
   getMcqTemplates,
   saveMcqTemplates,
@@ -54,5 +54,5 @@ router.put("/", upload.fields([
   },
 ]), updateMcqTemplates);
 router.get("/", getMcqTemplates);
-
+router.delete("/",deleteMcqTemplates)
 module.exports = router;
