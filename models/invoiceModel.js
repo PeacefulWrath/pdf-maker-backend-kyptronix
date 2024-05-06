@@ -18,7 +18,7 @@ const invoiceSchema = new mongoose.Schema(
         type:String,
     },
     invoice_date:{
-        type:Date,
+        type:String,
     },
     shipping_address:{
         type:String,

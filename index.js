@@ -5,6 +5,7 @@ const connectDB = require("./config/db");
 const templateRoutes = require("./routes/templateRoutes");
 const mcqRoutes=require("./routes/mcqRoutes")
 const invoiceRoutes=require("./routes/invoiceRoutes")
+const userRoutes=require("./routes/userRoutes")
 
 dotenv.config();
 connectDB();
@@ -18,6 +19,8 @@ const PORT = process.env.PORT;
 app.use("/api/template", templateRoutes);
 app.use("/api/mcq-template", mcqRoutes);
 app.use("/api/invoice", invoiceRoutes);
+app.use("/api/user", userRoutes);
+
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
