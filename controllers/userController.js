@@ -6,13 +6,20 @@ const jwt = require("jsonwebtoken")
 exports.signUp = async (req, res) => {
   try {
     let userModel = new UserModel();
+    
+    const userData = await userModel.find({email: req.body.email});
+
+    if(userData.length !==0){
+      throw new Error("user already registered")
+    }
+
     userModel.first_name = req.body.first_name
     userModel.last_name = req.body.last_name
     userModel.phone_no = req.body.phone_no
     userModel.role = req.body.role
     userModel.email = req.body.email
 
-
+    
     const password = req.body.password
     const hashedPassword = await new Promise((resolve, reject) => {
       bcrypt.hash(password, 10, function (err, hash) {

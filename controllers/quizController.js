@@ -1,8 +1,8 @@
-const McqModel = require("../models/mcqModel");
+const QuizModel = require("../models/quizModel")
 const fs = require("fs");
 const cloudinary = require("cloudinary");
 const dotenv = require("dotenv");
-const path = require("path");
+
 
 dotenv.config();
 cloudinary.v2.config({
@@ -14,16 +14,18 @@ cloudinary.v2.config({
 async function uploadImageToCloudinary(locaFileName, locaFilePath) {
   return cloudinary.v2.uploader
     .upload(locaFilePath, {
-      public_id: locaFileName.split(".")[0],
+      public_id: locaFileName,
       folder: "images/",
       use_filename: true,
     })
     .then((result) => {
+      // if(result.secure_url){
       // fs.unlinkSync(locaFilePath);
       return {
         message: "Success",
         url: result.secure_url,
       };
+      // }
     })
     .catch((error) => {
       // fs.unlinkSync(locaFilePath);
@@ -32,9 +34,9 @@ async function uploadImageToCloudinary(locaFileName, locaFilePath) {
     });
 }
 
-exports.saveMcqTemplates = async (req, res) => {
+exports.saveQuizTemplates = async (req, res) => {
   try {
-    const mcqModel = new McqModel();
+    const quizModel = new QuizModel();
     let tempOptions = [];
 
     if (!req.body.paper_name) {
@@ -105,30 +107,30 @@ exports.saveMcqTemplates = async (req, res) => {
 
     // all options in tempOptions
 
-    mcqModel.paper_name = req.body.paper_name;
+    quizModel.paper_name = req.body.paper_name;
 
     if (req.body.question && Array.isArray(req.body.question)) {
       let tempOptStartInd = 0;
       let tempOptEndInd = 4;
 
       for (let i = 0; i < req.body.question.length; i++) {
-        mcqModel.mcqs.push({
+        quizModel.quizzes.push({
           question: "",
           answer: "",
           options_type: "",
           options: [],
         });
-        mcqModel.mcqs[i].question = req.body.question[i];
+        quizModel.quizzes[i].question = req.body.question[i];
 
-        mcqModel.mcqs[i].options_type = req.body.options_type[i];
-        // mcqModel.mcqs[i].mark = req.body.mark[i];
-        mcqModel.mcqs[i].explaination = req.body.explaination[i];
+        quizModel.quizzes[i].options_type = req.body.options_type[i];
+        // quizModel.quizzes[i].mark = req.body.mark[i];
+        quizModel.quizzes[i].explaination = req.body.explaination[i];
 
-        if (mcqModel.mcqs[i].options_type === "text") {
-          mcqModel.mcqs[i].answer = JSON.parse(req.body.answer_text)[i];
+        if (quizModel.quizzes[i].options_type === "text") {
+          quizModel.quizzes[i].answer = JSON.parse(req.body.answer_text)[i];
         }
 
-        if (mcqModel.mcqs[i].options_type === "image") {
+        if (quizModel.quizzes[i].options_type === "image") {
           var locaFilePath = ""
           var locaFileName = ""
           // console.log("132",req.files)
@@ -146,26 +148,26 @@ exports.saveMcqTemplates = async (req, res) => {
               locaFilePath
             );
             if (resultImage) {
-              mcqModel.mcqs[i].answer = resultImage.url;
+              quizModel.quizzes[i].answer = resultImage.url;
             }
           }
         }
         for (let j = tempOptStartInd; j < tempOptEndInd; j++) {
-          mcqModel.mcqs[i].options.push(tempOptions[j]);
+          quizModel.quizzes[i].options.push(tempOptions[j]);
         }
         tempOptStartInd = tempOptEndInd;
         tempOptEndInd = tempOptEndInd + 4;
       }
     } else if (req.body.question) {
-      mcqModel.mcqs.push({
+      quizModel.quizzes.push({
         question: "",
         answer: "",
         options_type: "",
         options: [],
       });
-      mcqModel.mcqs[0].question = req.body.question;
+      quizModel.quizzes[0].question = req.body.question;
       if (req.body.options_type === "text") {
-        mcqModel.mcqs[0].answer = JSON.parse(req.body.answer_text)[0];;
+        quizModel.quizzes[0].answer = JSON.parse(req.body.answer_text)[0];;
       }
 
       if (req.body.options_type === "image") {
@@ -183,110 +185,37 @@ exports.saveMcqTemplates = async (req, res) => {
           }
         }
 
-        mcqModel.mcqs[0].answer = tempAnswer[0];
+        quizModel.quizzes[0].answer = tempAnswer[0];
       }
-      mcqModel.mcqs[0].options_type = req.body.options_type;
-      // mcqModel.mcqs[0].mark = req.body.mark;
-      mcqModel.mcqs[0].explaination = req.body.explaination;
+      quizModel.quizzes[0].options_type = req.body.options_type;
+      // quizModel.quizzes[0].mark = req.body.mark;
+      quizModel.quizzes[0].explaination = req.body.explaination;
       // for (let j = 0; j < 4; j++) {
-        mcqModel.mcqs[0].options=tempOptions;
+        quizModel.quizzes[0].options=tempOptions;
       // }
     }
 
-    const createdMcqData = await mcqModel.save();
+    const createdMcqData = await quizModel.save();
     if (createdMcqData) {
       return res.status(200).send(createdMcqData);
     } else {
-      throw new Error("mcq set created");
+      throw new Error("quiz set created");
     }
   } catch (error) {
     return res.status(400).send({ message: error.message });
   }
 };
 
-exports.updateMcqTemplates = async (req, res) => {
+exports.updateQuizTemplates = async (req, res) => {
   try {
 
-    if (req.body.update_attempt === "yes") {
-
-      let tempMcqDocData = await McqModel.find({})
-      let isPush = false
-      let setIndex = null
-      let attemptData = {
-        user_email: req.body.user_email,
-        last_visited_question: req.body.last_visited_question,
-        given_answers: req.body.given_answers
-      }
-      // console.log(":::",tempMcqDocData)
-      tempMcqDocData.forEach((md) => {
-        if (md?._id.toString() === req.body.mcqDocId) {
-          // console.log("ggg",md?.attempted)
-          if (md?.attempted && Array.isArray(md?.attempted) && md?.attempted.length !== 0) {
-            // console.log("hhh")
-            md.attempted.forEach((at, atInd) => {
-              if (at?.user_email === req.body.user_email) {
-                // console.log("111")
-                isPush = false
-                setIndex = atInd
-              } else {
-                // console.log("222")
-                isPush = true
-              }
-            })
-          } else {
-            // console.log("333")
-            isPush = true
-          }
-        }
-      })
-
-
-      // console.log("iii",isPush)
-
-      if (isPush == false) {
-        const updateAttemptData = await McqModel.findOneAndUpdate(
-          { _id: { $eq: req.body.mcqDocId } },
-          {
-            $set: {
-
-              [`attempted.${setIndex}`]: attemptData,
-            }
-          }
-          ,
-          {
-            new: true,
-          }
-        );
-        if (updateAttemptData) {
-          return res.send(updateAttemptData)
-        }
-      } else if (isPush == true) {
-        const updateAttemptData = await McqModel.findOneAndUpdate(
-          { _id: { $eq: req.body.mcqDocId } },
-          {
-            $push: {
-
-              attempted: attemptData,
-            }
-          }
-          ,
-          {
-            new: true,
-          }
-        );
-        if (updateAttemptData) {
-          return res.send(updateAttemptData)
-        }
-      }
-
-    }
 
     let updatedPaperName = undefined
 
     if (req.body.paper_name) {
       // console.log("paper name")
-      updatedPaperName = await McqModel.findOneAndUpdate(
-        { _id: req.body.mcqDocId },
+      updatedPaperName = await QuizModel.findOneAndUpdate(
+        { _id: req.body.quizDocId },
         {
           $set: {
             "paper_name": req.body.paper_name,
@@ -314,11 +243,11 @@ exports.updateMcqTemplates = async (req, res) => {
             locaFilePath
           );
           if (resultImage) {
-            const updatedDataImgOpt = await McqModel.findOneAndUpdate(
-              { _id: req.body.mcqDocId },
+            const updatedDataImgOpt = await QuizModel.findOneAndUpdate(
+              { _id: req.body.quizDocId },
               {
                 $set: {
-                  [`mcqs.${updateData[k].db_options_replacable_question_no}.options.${updateData[k].db_options_replacable_option_index}`]: resultImage.url,
+                  [`quizzes.${updateData[k].db_options_replacable_question_no}.options.${updateData[k].db_options_replacable_option_index}`]: resultImage.url,
                 }
               },
               { returnDocument: "after" }
@@ -336,11 +265,11 @@ exports.updateMcqTemplates = async (req, res) => {
 
       if (updateData[k].db_options_text_replacable_option_type && updateData[k].db_options_text_replacable_option_type === "text") {
 
-      const updatedDataTextOpt = await McqModel.findOneAndUpdate(
-          { _id: req.body.mcqDocId },
+        const updatedDataTextOpt = await QuizModel.findOneAndUpdate(
+          { _id: req.body.quizDocId },
           {
             $set: {
-              [`mcqs.${updateData[k].db_options_text_replacable_question_no}.options.${updateData[k].db_options_text_replacable_option_index}`]: updateData[k].db_options_text_data,
+              [`quizzes.${updateData[k].db_options_text_replacable_question_no}.options.${updateData[k].db_options_text_replacable_option_index}`]: updateData[k].db_options_text_data,
             }
           },
           { returnDocument: "after" }
@@ -370,11 +299,11 @@ exports.updateMcqTemplates = async (req, res) => {
           );
           // console.log("url",resultImage.url)
           if (resultImage) {
-            const updatedDataImgAns = await McqModel.findOneAndUpdate(
-              { _id: req.body.mcqDocId },
+            const updatedDataImgAns = await QuizModel.findOneAndUpdate(
+              { _id: req.body.quizDocId },
               {
                 $set: {
-                  [`mcqs.${updateData[k].db_answers_replacable_question_no}.answer`]: resultImage.url,
+                  [`quizzes.${updateData[k].db_answers_replacable_question_no}.answer`]: resultImage.url,
                 }
               },
               { returnDocument: "after" }
@@ -401,16 +330,16 @@ exports.updateMcqTemplates = async (req, res) => {
 
 
 
-        const updatedDataTextAns = await McqModel.findOneAndUpdate(
-          { _id: req.body.mcqDocId },
+        const updatedDataTextAns = await QuizModel.findOneAndUpdate(
+          { _id: req.body.quizDocId },
           {
             $set: {
-              [`mcqs.${updateData[k].db_text_answer_replacable_question_no}.answer`]: updateData[k].db_text_answer_data,
+              [`quizzes.${updateData[k].db_text_answer_replacable_question_no}.answer`]: updateData[k].db_text_answer_data,
             }
           },
           { returnDocument: "after" }
         );
-        // console.log("OOO",updateDataRR.mcqs[1].options)
+        // console.log("OOO",updateDataRR.quizzes[1].options)
         if (updatedDataTextAns) {
           isDataUpdated = "yes"
 
@@ -429,16 +358,16 @@ exports.updateMcqTemplates = async (req, res) => {
 
 
 
-      //   const updatedDataMarks = await McqModel.findOneAndUpdate(
-      //     { _id: req.body.mcqDocId },
+      //   const updatedDataMarks = await quizModel.findOneAndUpdate(
+      //     { _id: req.body.quizDocId },
       //     {
       //       $set: {
-      //         [`mcqs.${updateData[k].db_marks_replacable_question_no}.mark`]: updateData[k].db_marks_data,
+      //         [`quizzes.${updateData[k].db_marks_replacable_question_no}.mark`]: updateData[k].db_marks_data,
       //       }
       //     },
       //     { returnDocument: "after" }
       //   );
-      //   // console.log("OOO",updateDataRR.mcqs[1].options)
+      //   // console.log("OOO",updateDataRR.quizzes[1].options)
       //   if (updatedDataMarks) {
       //     isDataUpdated = "yes"
 
@@ -456,16 +385,16 @@ exports.updateMcqTemplates = async (req, res) => {
 
 
 
-        const updatedDataExp = await McqModel.findOneAndUpdate(
-          { _id: req.body.mcqDocId },
+        const updatedDataExp = await QuizModel.findOneAndUpdate(
+          { _id: req.body.quizDocId },
           {
             $set: {
-              [`mcqs.${updateData[k].db_explaination_replacable_question_no}.explaination`]: updateData[k].db_explaination_data,
+              [`quizzes.${updateData[k].db_explaination_replacable_question_no}.explaination`]: updateData[k].db_explaination_data,
             }
           },
           { returnDocument: "after" }
         );
-        // console.log("OOO",updateDataRR.mcqs[1].options)
+        // console.log("OOO",updateDataRR.quizzes[1].options)
         if (updatedDataExp) {
           isDataUpdated = "yes"
 
@@ -484,16 +413,16 @@ exports.updateMcqTemplates = async (req, res) => {
 
 
 
-        const updatedDataQues = await McqModel.findOneAndUpdate(
-          { _id: req.body.mcqDocId },
+        const updatedDataQues = await QuizModel.findOneAndUpdate(
+          { _id: req.body.quizDocId },
           {
             $set: {
-              [`mcqs.${updateData[k].db_questions_replacable_question_no}.explaination`]: updateData[k].db_questions_data,
+              [`quizzes.${updateData[k].db_questions_replacable_question_no}.explaination`]: updateData[k].db_questions_data,
             }
           },
           { returnDocument: "after" }
         );
-        // console.log("OOO",updateDataRR.mcqs[1].options)
+        // console.log("OOO",updateDataRR.quizzes[1].options)
         if (updatedDataQues) {
           isDataUpdated = "yes"
 
@@ -507,11 +436,11 @@ exports.updateMcqTemplates = async (req, res) => {
 
     //add new data
 
-    const mcqDocData = await McqModel.findById(req.body.mcqDocId);
-    // console.log("prev",mcqDocData)
+    const quizDocData = await QuizModel.findById(req.body.quizDocId);
+    // console.log("prev",quizDocData)
 
     let tempOptions = [];
-    let tempMcqLength = mcqDocData.mcqs.length
+    let tempQuizLength = quizDocData.quizzes.length
 
     if (req.body.options_type && Array.isArray(req.body.options_type)) {
       let imgOptStartIndex = 0;
@@ -582,23 +511,23 @@ exports.updateMcqTemplates = async (req, res) => {
       let tempOptEndInd = 4;
 
       for (let i = 0; i < req.body.question.length; i++) {
-        mcqDocData.mcqs.push({
+        quizDocData.quizzes.push({
           question: "",
           answer: "",
           options_type: "",
           options: [],
         });
-        mcqDocData.mcqs[tempMcqLength].question = req.body.question[i];
+        quizDocData.quizzes[tempQuizLength].question = req.body.question[i];
 
-        mcqDocData.mcqs[tempMcqLength].options_type = req.body.options_type[i];
-        // mcqDocData.mcqs[tempMcqLength].mark = req.body.mark[i];
-        mcqDocData.mcqs[tempMcqLength].explaination = req.body.explaination[i];
+        quizDocData.quizzes[tempQuizLength].options_type = req.body.options_type[i];
+        // mcqDocData.quizzes[tempMcqLength].mark = req.body.mark[i];
+        quizDocData.quizzes[tempQuizLength].explaination = req.body.explaination[i];
 
-        if (mcqDocData.mcqs[tempMcqLength].options_type === "text") {
-          mcqDocData.mcqs[tempMcqLength].answer = JSON.parse(req.body.answer_text)[i];
+        if (quizDocData.quizzes[tempQuizLength].options_type === "text") {
+          quizDocData.quizzes[tempQuizLength].answer = JSON.parse(req.body.answer_text)[i];
         }
 
-        if (mcqDocData.mcqs[tempMcqLength].options_type === "image") {
+        if (quizDocData.quizzes[tempQuizLength].options_type === "image") {
           var locaFilePath = ""
           var locaFileName = ""
           // console.log("132",req.files)
@@ -616,28 +545,29 @@ exports.updateMcqTemplates = async (req, res) => {
               locaFilePath
             );
             if (resultImage) {
-              mcqDocData.mcqs[tempMcqLength].answer = resultImage.url;
+              quizDocData.quizzes[tempQuizLength].answer = resultImage.url;
             }
           }
         }
         for (let j = tempOptStartInd; j < tempOptEndInd; j++) {
-          mcqDocData.mcqs[tempMcqLength].options.push(tempOptions[j]);
+          quizDocData.quizzes[tempQuizLength].options.push(tempOptions[j]);
         }
         tempOptStartInd = tempOptEndInd;
         tempOptEndInd = tempOptEndInd + 4;
-        tempMcqLength++
+        tempQuizLength++
       }
 
     } else if (req.body.question) {
-      mcqDocData.mcqs.push({
+      // console.log(":::",tempQuizLength)
+      quizDocData.quizzes.push({
         question: "",
         answer: "",
         options_type: "",
         options: [],
       });
-      mcqDocData.mcqs[tempMcqLength].question = req.body.question;
+      quizDocData.quizzes[tempQuizLength].question = req.body.question;
       if (req.body.options_type === "text") {
-        mcqDocData.mcqs[tempMcqLength].answer = JSON.parse(req.body.answer_text)[0];;
+        quizDocData.quizzes[tempQuizLength].answer = JSON.parse(req.body.answer_text)[0];;
       }
 
       if (req.body.options_type === "image") {
@@ -655,25 +585,26 @@ exports.updateMcqTemplates = async (req, res) => {
           }
         }
 
-        mcqDocData.mcqs[tempMcqLength].answer = tempAnswer[0];
+        quizDocData.quizzes[tempQuizLength].answer = tempAnswer[0];
       }
-      mcqDocData.mcqs[tempMcqLength].options_type = req.body.options_type;
-      // mcqDocData.mcqs[tempMcqLength].mark = req.body.mark;
-      mcqDocData.mcqs[tempMcqLength].explaination = req.body.explaination;
+      quizDocData.quizzes[tempQuizLength].options_type = req.body.options_type;
+      // mcqDocData.quizzes[tempMcqLength].mark = req.body.mark;
+      quizDocData.quizzes[tempQuizLength].explaination = req.body.explaination;
       // for (let j = 0; j < 4; j++) {
-        mcqDocData.mcqs[tempMcqLength].options.push(tempOptions);
+        
+        quizDocData.quizzes[tempQuizLength].options=tempOptions;
       // }
     }
 
-    // console.log("___",mcqDocData)
+    // console.log("___",quizDocData)
 
-    let addedMcqData = undefined
+    let addedQuizData = undefined
 
     if (req.body.options_type && req.body.question) {
-      addedMcqData = await McqModel.findOneAndUpdate(
-        { _id: { $eq: req.body.mcqDocId } },
+      addedQuizData = await QuizModel.findOneAndUpdate(
+        { _id: { $eq: req.body.quizDocId } },
         {
-          ...mcqDocData,
+          ...quizDocData,
         },
         {
           new: true,
@@ -685,14 +616,14 @@ exports.updateMcqTemplates = async (req, res) => {
     // console.log("LPP2",addedMcqData)
     // console.log("LPP3",updatedPaperName)
 
-    if (addedMcqData && isDataUpdated) {
-      return res.status(200).send({ "addedData": addedMcqData, "isUpdated": isDataUpdated });
-    } else if (addedMcqData&&isDataUpdated=="no") {
-      return res.status(200).send({ addedMcqData });
-    } else if (isDataUpdated&&!addedMcqData) {
+    if (addedQuizData && isDataUpdated) {
+      return res.status(200).send({ "addedData": addedQuizData, "isUpdated": isDataUpdated });
+    } else if (addedQuizData && !isDataUpdated) {
+      return res.status(200).send({ addedQuizData });
+    } else if (isDataUpdated && !addedQuizData) {
       return res.status(200).send({ isDataUpdated });
     } else {
-      throw new Error("mcq can't be updated");
+      throw new Error("quiz can't be updated");
     }
 
   } catch (error) {
@@ -700,34 +631,34 @@ exports.updateMcqTemplates = async (req, res) => {
   }
 }
 
-exports.getMcqTemplates = async (req, res) => {
+exports.getQuizTemplates = async (req, res) => {
   try {
-    const allMcqTemplates = await McqModel.find({});
+    const allQuizTemplates = await QuizModel.find({});
 
-    if (allMcqTemplates) {
-      return res.status(200).send(allMcqTemplates);
+    if (allQuizTemplates) {
+      return res.status(200).send(allQuizTemplates);
     }
-    throw new Error("templates not found");
+    throw new Error("quiz templates not found");
   } catch (error) {
     res.status(400).send({ message: error.message });
   }
 };
 
-exports.deleteMcqTemplates=async(req,res)=>{
-  try{
-    const mcqDocId = req.body.mcqDocId;
-  
-       const deletedData=await McqModel.findOneAndDelete(
-        {_id:{$eq:mcqDocId}}
-      )
-  
-      if(deletedData){
-        return res.status(200).send({message:"mcq template deleted successfully"})
-      }else{
-        throw new Error("cannot delete mcq template")
-      }
-  
-  }catch (error) {
-      res.status(400).send({ message: error.message });
+exports.deleteQuizTemplates = async (req, res) => {
+  try {
+    const quizDocId = req.body.quizDocId;
+
+    const deletedData = await QuizModel.findOneAndDelete(
+      { _id: { $eq: quizDocId } }
+    )
+
+    if (deletedData) {
+      return res.status(200).send({ message: "quiz template deleted successfully" })
+    } else {
+      throw new Error("cannot delete quiz template")
     }
+
+  } catch (error) {
+    res.status(400).send({ message: error.message });
+  }
 }

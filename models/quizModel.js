@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 
-const mcqSchema = new mongoose.Schema(
+const quizSchema = new mongoose.Schema(
   {
     paper_name: {
       type: String,
     },
-    mcqs: [{
+    quizzes: [{
       question: {
         type: String,
       },
@@ -23,24 +23,12 @@ const mcqSchema = new mongoose.Schema(
       }],
       answer: {
         type: String
-      },
-      
-    }],
-    attempted:[{
-      user_email:{
-        type: String,
-      },
-      last_visited_question:{
-        type: String,
-      },
-      given_answers:[{
-        type: String
-      }]
+      }
     }]
   },
   { timestamps: true }
 );
 
-const McqModel = mongoose.model("McqModel", mcqSchema);
+const QuizModel = mongoose.model("QuizModel", quizSchema);
 
-module.exports = McqModel;
+module.exports = QuizModel;
