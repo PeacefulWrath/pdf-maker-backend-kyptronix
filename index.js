@@ -8,6 +8,8 @@ const quizRoutes=require("./routes/quizRoutes")
 const invoiceRoutes=require("./routes/invoiceRoutes")
 const userRoutes=require("./routes/userRoutes")
 const purchaseOrderRoutes=require("./routes/purchaseOrderRoutes")
+const faqRoutes=require("./routes/faqRoutes")
+const galleryRoutes=require("./routes/galleryRoutes")
 
 dotenv.config();
 connectDB();
@@ -24,6 +26,8 @@ app.use("/api/quiz-template", quizRoutes);
 app.use("/api/invoice", invoiceRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/purchase-order", purchaseOrderRoutes);
+app.use("/api/faq", faqRoutes);
+app.use("/api/gallery", galleryRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
