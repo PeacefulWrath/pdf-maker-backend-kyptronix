@@ -1,4 +1,4 @@
-const TemplateModel = require("../models/templateModel");
+const TemplateModel = require("../models/fileModel");
 const fs = require("fs");
 const cloudinary = require("cloudinary");
 const dotenv = require("dotenv");
@@ -459,26 +459,23 @@ exports.updateTemplates = async (req, res) => {
     let templateName = req.body.template_name;
     let templateDesc = req.body.template_desc;
     let templateImage=req.body.template_image
-
-
+   
 
     // console.log("image",req.body.template_image)
 
 
     req.body = {};
 
-    if(templateName){
-    req.body.template_name = templateName;
+    if (templateName) {
+      req.body.template_name = templateName;
     }
-    if(templateDesc){
-    req.body.template_desc = templateDesc;
+    if (templateDesc) {
+      req.body.template_desc = templateDesc;
     }
-    if(templateImage){
-    req.body.template_image =templateImage;
+    if (templateImage) {
+      req.body.template_image = templateImage;
     }
-    
-
-
+  
 
     if (allPdfs.length > 0) {
       req.body.template_pdfs = allPdfs;

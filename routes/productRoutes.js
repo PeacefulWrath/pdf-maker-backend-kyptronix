@@ -2,12 +2,8 @@ const express = require("express");
 const multer = require("multer");
 const fs = require("fs");
 const {
-  saveTemplates,
-  getTemplates,
-  updateTemplates,
-  deleteTemplates
- 
-} = require("../controllers/templateController");
+  saveProducts, fetchProducts
+} = require("../controllers/productController");
 
 
 const router = express.Router();
@@ -19,19 +15,22 @@ if (!fs.existsSync("./uploads")) {
 // Multer setup
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-      cb(null, "./uploads");
+    cb(null, "./uploads");
   },
   filename: function (req, file, cb) {
-      cb(null, file.originalname);
+    cb(null, file.originalname);
   },
 });
 
 var upload = multer({ storage: storage });
 
 
-router.post("/",   upload.array('files', 10), saveTemplates);
-router.get("/", getTemplates);
-router.put("/",   upload.array('files', 10), updateTemplates);
-router.delete("/", deleteTemplates);
+router.post("/", upload.fields([
+  {
+    name: "product",
+  }
+]), saveProducts);
+
+router.get("/", fetchProducts);
 
 module.exports = router;

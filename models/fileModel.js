@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const templateSchema = new mongoose.Schema(
+const fileSchema = new mongoose.Schema(
   {
     template_name: {
       type: String,
@@ -68,6 +68,6 @@ const templateSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const TemplateModel = mongoose.model("TemplateModel", templateSchema);
+const FileModel = mongoose.model("FileModel", fileSchema);
 
-module.exports = TemplateModel;
+module.exports = FileModel;
