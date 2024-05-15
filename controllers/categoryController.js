@@ -62,7 +62,6 @@ exports.updateCategories= async (req, res) => {
   }
 };
 
-
 exports.deleteCategories = async (req, res) => {
   try {
     const catId = req.body.cat_id;
