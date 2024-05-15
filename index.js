@@ -10,6 +10,8 @@ const userRoutes=require("./routes/userRoutes")
 const purchaseOrderRoutes=require("./routes/purchaseOrderRoutes")
 const faqRoutes=require("./routes/faqRoutes")
 const galleryRoutes=require("./routes/galleryRoutes")
+const categoryRoutes=require("./routes/categoryRoutes")
+const productRoutes=require("./routes/productRoutes")
 
 dotenv.config();
 connectDB();
@@ -28,6 +30,9 @@ app.use("/api/user", userRoutes);
 app.use("/api/purchase-order", purchaseOrderRoutes);
 app.use("/api/faq", faqRoutes);
 app.use("/api/gallery", galleryRoutes);
+app.use("/api/category", categoryRoutes);
+app.use("/api/product", productRoutes);
+
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

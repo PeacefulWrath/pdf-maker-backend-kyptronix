@@ -9,7 +9,8 @@ const productSchema = new mongoose.Schema(
       type: String,
     },
     category: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "CategoryModel"
     },
     real_price:{
       type: Number,

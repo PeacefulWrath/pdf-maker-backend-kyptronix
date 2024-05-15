@@ -2,7 +2,10 @@ const express = require("express");
 const multer = require("multer");
 const fs = require("fs");
 const {
-  saveProducts, fetchProducts
+  saveProducts, 
+  fetchProducts,
+  updateProducts,
+  deleteProducts
 } = require("../controllers/productController");
 
 
@@ -32,5 +35,12 @@ router.post("/", upload.fields([
 ]), saveProducts);
 
 router.get("/", fetchProducts);
+router.put("/", upload.fields([
+  {
+    name: "product",
+  }
+]), updateProducts);
+
+router.delete("/", deleteProducts);
 
 module.exports = router;
