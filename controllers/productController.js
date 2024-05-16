@@ -40,6 +40,9 @@ exports.saveProducts = async (req, res) => {
     productModel.real_price = req.body.real_price
     productModel.discounted_price = req.body.discounted_price
     productModel.star = req.body.star.toString()
+    productModel.file_templates = JSON.parse(req.body.file_templates)
+    productModel.mcq_templates = JSON.parse(req.body.mcq_templates)
+    productModel.quiz_templates = JSON.parse(req.body.quiz_templates)
 
     for (var i = 0; i < req.files.product.length; i++) {
       var locaFilePath = req.files.product[i].path;
@@ -58,6 +61,7 @@ exports.saveProducts = async (req, res) => {
       }
 
     }
+
     const insertedData = await productModel.save()
     if (insertedData) {
       return res.send(insertedData)
@@ -73,19 +77,7 @@ exports.saveProducts = async (req, res) => {
 
 exports.fetchProducts = async (req, res) => {
   try {
-    const fetchedData = await ProductModel.find({}).populate({
-      path: "category",
-      populate: { path: 'file_templates' }
-
-    }).populate({
-      path: "category",
-      populate: { path: 'mcq_templates' }
-
-    }).populate({
-      path: "category",
-      populate: { path: 'quiz_templates' }
-
-    })
+    const fetchedData = await ProductModel.find({}).populate('category').populate('file_templates').populate('mcq_templates').populate('quiz_templates')
     if (fetchedData) {
       return res.send({
         success: true,
@@ -122,8 +114,12 @@ exports.updateProducts = async (req, res) => {
         }
 
       }
-    
+
     }
+
+    req.body.file_templates = JSON.parse(req.body.file_templates)
+    req.body.mcq_templates = JSON.parse(req.body.mcq_templates)
+    req.body.quiz_templates = JSON.parse(req.body.quiz_templates)
 
     const updatedData = await ProductModel.findOneAndUpdate(
       { _id: { $eq: req.body.product_id } },
@@ -134,6 +130,7 @@ exports.updateProducts = async (req, res) => {
         new: true,
       }
     );
+
     if (updatedData) {
       return res.send(updatedData)
     } else {
@@ -147,11 +144,11 @@ exports.updateProducts = async (req, res) => {
 exports.deleteProducts = async (req, res) => {
   try {
     const prodId = req.body.product_id;
-  
-   
-    const deletedData=await ProductModel.findOneAndDelete(
-     {_id:{$eq:prodId}}
-   )
+
+
+    const deletedData = await ProductModel.findOneAndDelete(
+      { _id: { $eq: prodId } }
+    )
     if (deletedData) {
       return res.send(deletedData)
     } else {

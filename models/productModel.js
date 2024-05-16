@@ -11,7 +11,19 @@ const productSchema = new mongoose.Schema(
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "CategoryModel"
-    },
+    },  
+    file_templates: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "FileModel"
+    }],
+    mcq_templates: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "McqModel"
+    }],
+    quiz_templates: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "QuizModel"
+    }],
     real_price:{
       type: Number,
     },

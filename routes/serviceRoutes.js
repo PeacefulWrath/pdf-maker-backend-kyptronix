@@ -2,12 +2,11 @@ const express = require("express");
 const multer = require("multer");
 const fs = require("fs");
 const {
-    saveCategories,
-    fetchCategories,
-    updateCategories,
-    deleteCategories
-
-} = require("../controllers/categoryController");
+   saveServices,
+   fetchServices,
+   updateServices,
+   deleteServices
+} = require("../controllers/serviceController");
 
 
 const router = express.Router();
@@ -29,18 +28,19 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage });
 
 
-
-
 router.post("/", upload.fields([
     {
-        name: "category",
+        name: "service",
     }
-]), saveCategories);
+]), saveServices);
+
+router.get("/", fetchServices);
 router.put("/", upload.fields([
     {
-        name: "category",
+        name: "service",
     }
-]), updateCategories);
-router.get("/", fetchCategories);
-router.delete("/", deleteCategories);
+]), updateServices);
+
+router.delete("/", deleteServices);
+
 module.exports = router;
