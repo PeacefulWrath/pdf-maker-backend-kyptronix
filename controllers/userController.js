@@ -93,21 +93,18 @@ exports.getUsers = async (req, res) => {
 exports.signIn = async (req, res) => {
   try {
     if (!req.body.email) {
-      return res.status(400).send({
-        success: false,
-        message: "Please provide email",
-      });
+     throw "Please provide email"
+      
     }
     if (!req.body.password) {
-      return res.status(400).send({
-        success: false,
-        message: "Please provide password",
-      });
+      throw "Please provide password"
     }
 
 
     const email = req.body.email;
     const password = req.body.password;
+
+    // console.log("hhh",req.body)
 
     const userData = await UserModel.find({ email: email });
 
@@ -118,10 +115,10 @@ exports.signIn = async (req, res) => {
       if (isValidPassword) {
         const user = userData[0]
 
-        jwt.sign(JSON.parse(JSON.stringify(user)), process.env.JWT_SECRET_KEY, { expiresIn: '1m' }, (error, token) => {
+        jwt.sign(JSON.parse(JSON.stringify(user)), process.env.JWT_SECRET_KEY, { expiresIn: '2m' }, (error, token) => {
           if (error) {
 
-            throw "error in token creation"
+            throw error.message
 
           }
           else {
@@ -144,8 +141,7 @@ exports.signIn = async (req, res) => {
   } catch (error) {
     res.status(500).send({
       success: false,
-      error,
-      message: "Error in signin",
+      message: error,
     });
   }
 };

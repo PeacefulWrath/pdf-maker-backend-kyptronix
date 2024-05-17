@@ -1,7 +1,12 @@
 const express = require("express");
 const multer = require("multer");
 const fs = require("fs");
-const { saveTestimonials, fetchTestimonials, updateTestimonials, deleteTestimonials } = require("../controllers/testimonialController");
+const {
+ savePartners,
+ updatePartners,
+ getPartners,
+ deletePartners
+} = require("../controllers/partnerController");
 
 
 const router = express.Router();
@@ -23,23 +28,19 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage });
 
 
-router.post("/",
-//  upload.fields([
-//   {
-//     name: "testimonial",
-//   }
-// ]), 
-saveTestimonials);
+router.post("/", upload.fields([
+  {
+    name: "partner",
+  }
+]), savePartners);
 
-router.get("/", fetchTestimonials);
-router.put("/", 
-// upload.fields([
-//   {
-//     name: "testimonial",
-//   }
-// ]), 
-updateTestimonials);
+router.get("/", getPartners);
+router.put("/", upload.fields([
+  {
+    name: "partner",
+  }
+]), updatePartners);
 
-router.delete("/", deleteTestimonials);
+router.delete("/", deletePartners);
 
 module.exports = router;

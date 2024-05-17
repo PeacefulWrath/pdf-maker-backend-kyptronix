@@ -5,6 +5,7 @@ const {
     updateFaqs,
     deleteFaqs
 } = require("../controllers/faqController");
+const { getToken, verifyToken } = require("../controllers/userController");
 
 
 const router = express.Router();
@@ -14,6 +15,6 @@ const router = express.Router();
 
 router.post("/",    saveFaqs);
 router.put("/",    updateFaqs);
-router.get("/",    fetchFaqs);
+router.get("/", getToken,verifyToken,fetchFaqs);
 router.delete("/",    deleteFaqs);
 module.exports = router;

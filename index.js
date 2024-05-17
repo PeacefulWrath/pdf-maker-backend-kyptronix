@@ -16,6 +16,7 @@ const  trainingModuleRoutes=require("./routes/trainingModuleRoutes")
 const  cusRoutes=require("./routes/chooseUsRoutes")
 const testimonialRoutes=require("./routes/testimonialRoutes")
 const serviceRoutes=require("./routes/serviceRoutes")
+const partnerRoutes=require("./routes/partnerRoutes")
 
 dotenv.config();
 connectDB();
@@ -40,6 +41,7 @@ app.use("/api/training-module", trainingModuleRoutes);
 app.use("/api/choose-us", cusRoutes);
 app.use("/api/testimonial", testimonialRoutes);
 app.use("/api/service",serviceRoutes);
+app.use("/api/partner",partnerRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

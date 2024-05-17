@@ -35,29 +35,29 @@ async function uploadImageToCloudinary(locaFileName, locaFilePath) {
 exports.saveTestimonials = async (req, res) => {
   try {
     let testimonialModel = new TestimonialModel();
-    testimonialModel.name = req.body.name
-    testimonialModel.user_name = req.body.user_name
-    testimonialModel.description = req.body.description
-    testimonialModel.profession = req.body.profession
+    // console.log("vvv",req.body.user_details)
+    testimonialModel.name=req.body.name
+    testimonialModel.user_details = JSON.parse(req.body.user_details)
 
 
-    for (var i = 0; i < req.files.testimonial.length; i++) {
-      var locaFilePath = req.files.testimonial[i].path;
-      var locaFileName = req.files.testimonial[i].filename;
-      let imageExtensions = ["png", "jpg", "jpeg", "gif"];
+
+    // for (var i = 0; i < req.files.testimonial.length; i++) {
+    //   var locaFilePath = req.files.testimonial[i].path;
+    //   var locaFileName = req.files.testimonial[i].filename;
+    //   let imageExtensions = ["png", "jpg", "jpeg", "gif"];
 
 
-      if (imageExtensions.includes(locaFileName.split(".")[1])) {
-        var resultImage = await uploadImageToCloudinary(
-          locaFileName,
-          locaFilePath
-        );
-        if (resultImage) {
-          testimonialModel.image = resultImage.url;
-        }
-      }
+    //   if (imageExtensions.includes(locaFileName.split(".")[1])) {
+    //     var resultImage = await uploadImageToCloudinary(
+    //       locaFileName,
+    //       locaFilePath
+    //     );
+    //     if (resultImage) {
+    //       testimonialModel.image = resultImage.url;
+    //     }
+    //   }
 
-    }
+    // }
     const insertedData = await testimonialModel.save()
     if (insertedData) {
       return res.send({success:"yes",insertedData})
@@ -93,26 +93,28 @@ exports.fetchTestimonials = async (req, res) => {
 exports.updateTestimonials = async (req, res) => {
   try {
 
-    if (req.files && req.files.testimonial && Array.isArray(req.files.testimonial)) {
-      for (var i = 0; i < req.files.testimonial.length; i++) {
-        var locaFilePath = req.files.testimonial[i].path;
-        var locaFileName = req.files.testimonial[i].filename;
-        let imageExtensions = ["png", "jpg", "jpeg", "gif"];
+    // if (req.files && req.files.testimonial && Array.isArray(req.files.testimonial)) {
+    //   for (var i = 0; i < req.files.testimonial.length; i++) {
+    //     var locaFilePath = req.files.testimonial[i].path;
+    //     var locaFileName = req.files.testimonial[i].filename;
+    //     let imageExtensions = ["png", "jpg", "jpeg", "gif"];
 
 
-        if (imageExtensions.includes(locaFileName.split(".")[1])) {
-          var resultImage = await uploadImageToCloudinary(
-            locaFileName,
-            locaFilePath
-          );
-          if (resultImage) {
-            req.body.image = resultImage.url;
-          }
-        }
+    //     if (imageExtensions.includes(locaFileName.split(".")[1])) {
+    //       var resultImage = await uploadImageToCloudinary(
+    //         locaFileName,
+    //         locaFilePath
+    //       );
+    //       if (resultImage) {
+    //         req.body.image = resultImage.url;
+    //       }
+    //     }
 
-      }
+    //   }
     
-    }
+    // }
+    
+    req.body.user_details = JSON.parse(req.body.user_details)
 
     const updatedData = await TestimonialModel.findOneAndUpdate(
       { _id: { $eq: req.body.testimonial_id } },

@@ -5,18 +5,21 @@ const testimonialSchema = new mongoose.Schema(
         name: {
             type: String,
         },
-        user_name: {
-            type: String,
-        },
-        image: {
-            type: String,
-        },
-        description: {
-            type: String,
-        },
-        profession: {
-            type: String,
-        }
+
+        user_details: [{
+                user_name: {
+                    type: String,
+                },
+                // image: {
+                //     type: String,
+                // },
+                description: {
+                    type: String,
+                },
+                profession: {
+                    type: String,
+                }
+            }]
     },
     { timestamps: true }
 );
