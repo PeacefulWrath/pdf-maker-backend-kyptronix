@@ -7,7 +7,7 @@ const {
     updatePurchaseOrders,
     deletePurchaseOrders
 } = require("../controllers/purchaseOrderController");
-
+const { getToken, verifyToken } = require("../controllers/userController");
 
 const router = express.Router();
 
@@ -29,8 +29,8 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage });
 
 
-router.post("/",  upload.array('logo', 1),  savePurchaseOrders);
-router.put("/", upload.array('logo', 1),   updatePurchaseOrders);
-router.get("/",    fetchPurchaseOrders);
-router.delete("/",    deletePurchaseOrders);
+router.post("/", getToken, verifyToken, upload.array('logo', 1),  savePurchaseOrders);
+router.put("/", getToken, verifyToken,upload.array('logo', 1),   updatePurchaseOrders);
+router.get("/",  getToken, verifyToken,  fetchPurchaseOrders);
+router.delete("/",  getToken, verifyToken,  deletePurchaseOrders);
 module.exports = router;

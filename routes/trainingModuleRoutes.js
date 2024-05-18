@@ -8,7 +8,7 @@ const {
     deleteTrainingModules
 } = require("../controllers/trainingModuleController");
 
-
+const { getToken, verifyToken } = require("../controllers/userController");
 const router = express.Router();
 
 if (!fs.existsSync("./uploads")) {
@@ -28,19 +28,19 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage });
 
 
-router.post("/", upload.fields([
+router.post("/",getToken, verifyToken, upload.fields([
     {
         name: "trainingModule",
     }
 ]), saveTraingModules);
 
-router.get("/", fetchTraingModules);
-router.put("/", upload.fields([
+router.get("/", getToken, verifyToken,fetchTraingModules);
+router.put("/", getToken, verifyToken,upload.fields([
     {
         name: "trainingModule",
     }
 ]), updateTraingModules);
 
-router.delete("/", deleteTrainingModules);
+router.delete("/", getToken, verifyToken,deleteTrainingModules);
 
 module.exports = router;

@@ -7,7 +7,7 @@ const {
   updateGallery,
   deleteGallery
 } = require("../controllers/galleryController");
-
+const { getToken, verifyToken } = require("../controllers/userController");
 const path = require("path");
 
 const router = express.Router();
@@ -29,7 +29,7 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage });
 
 router.post(
-  "/",
+  "/",getToken, verifyToken,
   upload.fields([
     {
       name: "gallery",
@@ -38,14 +38,14 @@ router.post(
   saveGallery
 );
 
-router.put("/", upload.fields([
+router.put("/",getToken, verifyToken, upload.fields([
   {
     name: "gallery",
   },
 ]), updateGallery);
 
-router.get("/", fetchGalleries);
+router.get("/",getToken, verifyToken, fetchGalleries);
 
-router.delete("/",deleteGallery)
+router.delete("/",getToken, verifyToken,deleteGallery)
 
 module.exports = router;

@@ -7,7 +7,7 @@ const {
    updateServices,
    deleteServices
 } = require("../controllers/serviceController");
-
+const { getToken, verifyToken } = require("../controllers/userController");
 
 const router = express.Router();
 
@@ -28,19 +28,19 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage });
 
 
-router.post("/", upload.fields([
+router.post("/", getToken, verifyToken,upload.fields([
     {
         name: "service",
     }
 ]), saveServices);
 
-router.get("/", fetchServices);
-router.put("/", upload.fields([
+router.get("/",getToken, verifyToken,fetchServices);
+router.put("/", getToken, verifyToken,upload.fields([
     {
         name: "service",
     }
 ]), updateServices);
 
-router.delete("/", deleteServices);
+router.delete("/",getToken, verifyToken,deleteServices);
 
 module.exports = router;

@@ -3,7 +3,7 @@ const multer = require("multer");
 const fs = require("fs");
 const { saveTestimonials, fetchTestimonials, updateTestimonials, deleteTestimonials } = require("../controllers/testimonialController");
 
-
+const { getToken, verifyToken } = require("../controllers/userController");
 const router = express.Router();
 
 if (!fs.existsSync("./uploads")) {
@@ -23,7 +23,7 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage });
 
 
-router.post("/",
+router.post("/",getToken, verifyToken,
 //  upload.fields([
 //   {
 //     name: "testimonial",
@@ -31,15 +31,16 @@ router.post("/",
 // ]), 
 saveTestimonials);
 
-router.get("/", fetchTestimonials);
+router.get("/",getToken, verifyToken, fetchTestimonials);
 router.put("/", 
 // upload.fields([
 //   {
 //     name: "testimonial",
 //   }
 // ]), 
+getToken, verifyToken,
 updateTestimonials);
 
-router.delete("/", deleteTestimonials);
+router.delete("/",getToken, verifyToken, deleteTestimonials);
 
 module.exports = router;

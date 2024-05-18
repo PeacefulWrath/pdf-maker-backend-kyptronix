@@ -7,7 +7,7 @@ const {
   updateProducts,
   deleteProducts
 } = require("../controllers/productController");
-
+const { getToken, verifyToken } = require("../controllers/userController");
 
 const router = express.Router();
 
@@ -28,19 +28,19 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage });
 
 
-router.post("/", upload.fields([
+router.post("/",getToken, verifyToken, upload.fields([
   {
     name: "product",
   }
 ]), saveProducts);
 
-router.get("/", fetchProducts);
-router.put("/", upload.fields([
+router.get("/",getToken, verifyToken, fetchProducts);
+router.put("/", getToken, verifyToken,upload.fields([
   {
     name: "product",
   }
 ]), updateProducts);
 
-router.delete("/", deleteProducts);
+router.delete("/", getToken, verifyToken,deleteProducts);
 
 module.exports = router;

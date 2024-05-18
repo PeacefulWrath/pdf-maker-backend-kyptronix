@@ -8,7 +8,7 @@ const {
  deletePartners
 } = require("../controllers/partnerController");
 
-
+const { getToken, verifyToken } = require("../controllers/userController");
 const router = express.Router();
 
 if (!fs.existsSync("./uploads")) {
@@ -28,19 +28,19 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage });
 
 
-router.post("/", upload.fields([
+router.post("/",getToken, verifyToken, upload.fields([
   {
     name: "partner",
   }
 ]), savePartners);
 
-router.get("/", getPartners);
-router.put("/", upload.fields([
+router.get("/", getToken, verifyToken,getPartners);
+router.put("/", getToken, verifyToken,upload.fields([
   {
     name: "partner",
   }
 ]), updatePartners);
 
-router.delete("/", deletePartners);
+router.delete("/",getToken, verifyToken, deletePartners);
 
 module.exports = router;

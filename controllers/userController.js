@@ -115,7 +115,7 @@ exports.signIn = async (req, res) => {
       if (isValidPassword) {
         const user = userData[0]
 
-        jwt.sign(JSON.parse(JSON.stringify(user)), process.env.JWT_SECRET_KEY, { expiresIn: '2m' }, (error, token) => {
+        jwt.sign(JSON.parse(JSON.stringify(user)), process.env.JWT_SECRET_KEY, { expiresIn: '1h' }, (error, token) => {
           if (error) {
 
             throw error.message

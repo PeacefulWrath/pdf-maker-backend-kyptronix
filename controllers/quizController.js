@@ -40,7 +40,7 @@ exports.saveQuizTemplates = async (req, res) => {
     let tempOptions = [];
 
     if (!req.body.paper_name) {
-      return res.status(400).send({ message: "paper name required" });
+      return res.status(400).send({success:"no", message: "paper name required" });
     }
 
     if (req.body.options_type && Array.isArray(req.body.options_type)) {
@@ -197,12 +197,12 @@ exports.saveQuizTemplates = async (req, res) => {
 
     const createdMcqData = await quizModel.save();
     if (createdMcqData) {
-      return res.status(200).send(createdMcqData);
+      return res.status(200).send({success:"yes",createdMcqData});
     } else {
       throw new Error("quiz set created");
     }
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({success:"no", message: error.message });
   }
 };
 
@@ -617,17 +617,17 @@ exports.updateQuizTemplates = async (req, res) => {
     // console.log("LPP3",updatedPaperName)
 
     if (addedQuizData && isDataUpdated) {
-      return res.status(200).send({ "addedData": addedQuizData, "isUpdated": isDataUpdated });
+      return res.status(200).send({ success:"yes","addedData": addedQuizData, "isUpdated": isDataUpdated });
     } else if (addedQuizData && !isDataUpdated) {
-      return res.status(200).send({ addedQuizData });
+      return res.status(200).send({success:"yes", addedQuizData });
     } else if (isDataUpdated && !addedQuizData) {
-      return res.status(200).send({ isDataUpdated });
+      return res.status(200).send({success:"yes", isDataUpdated });
     } else {
       throw new Error("quiz can't be updated");
     }
 
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({success:"no", message: error.message });
   }
 }
 
@@ -636,11 +636,11 @@ exports.getQuizTemplates = async (req, res) => {
     const allQuizTemplates = await QuizModel.find({});
 
     if (allQuizTemplates) {
-      return res.status(200).send(allQuizTemplates);
+      return res.status(200).send({success:"yes",allQuizTemplates});
     }
     throw new Error("quiz templates not found");
   } catch (error) {
-    res.status(400).send({ message: error.message });
+    res.status(400).send({ success:"no",message: error.message });
   }
 };
 
@@ -653,12 +653,12 @@ exports.deleteQuizTemplates = async (req, res) => {
     )
 
     if (deletedData) {
-      return res.status(200).send({ message: "quiz template deleted successfully" })
+      return res.status(200).send({success:"yes", message: "quiz template deleted successfully" })
     } else {
       throw new Error("cannot delete quiz template")
     }
 
   } catch (error) {
-    res.status(400).send({ message: error.message });
+    res.status(400).send({success:"no", message: error.message });
   }
 }

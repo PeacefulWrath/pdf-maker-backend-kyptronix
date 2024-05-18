@@ -85,14 +85,14 @@ exports.savePurchaseOrders = async (req, res) => {
 
     const insertedData = await purchaseOrderModel.save()
     if (insertedData) {
-      return res.send({success:true,insertedData:insertedData})
+      return res.send({success:"yes",insertedData})
     } else {
       throw new Error("purchase order not created")
     }
 
 
   } catch (error) {
-    return res.status(400).send({ success:false,message: error.message });
+    return res.status(400).send({ success:"no",message: error.message });
   }
 };
 
@@ -100,14 +100,14 @@ exports.fetchPurchaseOrders= async (req, res) => {
   try {
     const fetchedData = await PurchaseOrderModel.find({})
     if (fetchedData) {
-      return res.send(fetchedData)
+      return res.send({success:"yes",fetchedData})
     } else {
       throw new Error("purchase orders not fetched")
     }
 
 
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({success:"no", message: error.message });
   }
 };
 
@@ -151,14 +151,14 @@ exports.updatePurchaseOrders = async (req, res) => {
     );
 
     if (updatedData) {
-      return res.send({success:true,updatedData:updatedData})
+      return res.send({success:"yes",updatedData:updatedData})
     } else {
       throw new Error("purchase orders not updated")
     }
 
 
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({ success:"no",message: error.message });
   }
 };
 
@@ -169,13 +169,13 @@ exports.deletePurchaseOrders = async (req, res) => {
      {_id:{$eq: req.body.poId}}
    )
     if (deletedData) {
-      return res.send(deletedData)
+      return res.send({success:"yes",deletedData})
     } else {
       throw new Error("purchase orders not deleted")
     }
 
 
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({ success:"no",message: error.message });
   }
 };

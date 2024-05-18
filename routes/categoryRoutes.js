@@ -8,7 +8,7 @@ const {
     deleteCategories
 
 } = require("../controllers/categoryController");
-
+const { getToken, verifyToken } = require("../controllers/userController");
 
 const router = express.Router();
 
@@ -31,16 +31,16 @@ var upload = multer({ storage: storage });
 
 
 
-router.post("/", upload.fields([
+router.post("/", getToken, verifyToken,upload.fields([
     {
         name: "category",
     }
 ]), saveCategories);
-router.put("/", upload.fields([
+router.put("/",getToken, verifyToken, upload.fields([
     {
         name: "category",
     }
 ]), updateCategories);
-router.get("/", fetchCategories);
-router.delete("/", deleteCategories);
+router.get("/", getToken, verifyToken,fetchCategories);
+router.delete("/", getToken, verifyToken,deleteCategories);
 module.exports = router;

@@ -199,12 +199,12 @@ exports.saveTemplates = async (req, res) => {
     });
 
     if (insertedTemplateData) {
-      return res.status(200).send(insertedTemplateData);
+      return res.status(200).send({success:"no",message:"file created",insertedTemplateData});
     } else {
       throw new Error("cannot insert data in db");
     }
   } catch (error) {
-    res.status(400).send({ message: error.message });
+    res.status(400).send({success:"no", message: error.message });
   }
 };
 
@@ -222,11 +222,11 @@ exports.getTemplates = async (req, res) => {
     });
 
     if (allTemplates) {
-      return res.status(200).send(allTemplates);
+      return res.status(200).send({success:"yes",message:"all file templates",allTemplates});
     }
     throw new Error("templates not found");
   } catch (error) {
-    res.status(400).send({ message: error.message });
+    res.status(400).send({success:"no", message: error.message });
   }
 };
 
@@ -502,12 +502,12 @@ exports.updateTemplates = async (req, res) => {
     );
 
     if (updatedTemplateData) {
-      return res.status(200).send(updatedTemplateData);
+      return res.status(200).send({success:"yes",message:"file templates updated successfully",updatedTemplateData});
     } else {
       throw new Error("cannot update the template");
     }
   } catch (error) {
-    res.status(400).send({ message: error.message });
+    res.status(400).send({success:"no", message: error.message });
   }
 };
 
@@ -520,12 +520,12 @@ try{
     )
 
     if(deletedData){
-      return res.status(200).send({message:"template deleted successfully"})
+      return res.status(200).send({success:"yes",message:"template deleted successfully"})
     }else{
       throw new Error("cannot delete template")
     }
 
 }catch (error) {
-    res.status(400).send({ message: error.message });
+    res.status(400).send({ success:"no",message: error.message });
   }
 }

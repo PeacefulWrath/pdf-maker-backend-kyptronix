@@ -13,14 +13,14 @@ exports.saveFaqs = async (req, res) => {
 
     const insertedData = await faqModel.save()
     if (insertedData) {
-      return res.send(insertedData)
+      return res.send({success: "yes",message:"faq created",insertedData})
     } else {
       throw new Error("faq not created")
     }
 
 
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({success: "no", message: error.message });
   }
 };
 
@@ -28,7 +28,7 @@ exports.fetchFaqs = async (req, res) => {
     try {
       const allFaqData = await FaqModel.find({})
       if (allFaqData) {
-        return res.send({ success: true,
+        return res.send({ success: "yes",
           message: "all faq data",allFaqData})
       } else {
         throw new Error("faq not fetched")
@@ -36,7 +36,7 @@ exports.fetchFaqs = async (req, res) => {
   
   
     } catch (error) {
-      return res.status(400).send({ message: error.message });
+      return res.status(400).send({ success:"no",message: error.message });
     }
 };
 
@@ -53,12 +53,12 @@ exports.updateFaqs = async (req, res) => {
       }
     );
     if (updatedData) {
-      return res.send(updatedData)
+      return res.send({success: "yes", message:"faq updated", updatedData})
     } else {
       throw new Error("faq not updated")
     }
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({success: "no", message: error.message });
   }
 };
 
@@ -71,13 +71,13 @@ exports.deleteFaqs = async (req, res) => {
      {_id:{$eq:faqId}}
    )
     if (deletedData) {
-      return res.send(deletedData)
+      return res.send({success:"yes",message:"faq deleted",deletedData})
     } else {
       throw new Error("faq not deleted")
     }
 
 
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({ success:"no",message: error.message });
   }
 };

@@ -195,12 +195,12 @@ exports.saveMcqTemplates = async (req, res) => {
 
     const createdMcqData = await mcqModel.save();
     if (createdMcqData) {
-      return res.status(200).send(createdMcqData);
+      return res.status(200).send({success:"yes",message:"mcq created",createdMcqData});
     } else {
       throw new Error("mcq set created");
     }
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({ success:"no",message: error.message });
   }
 };
 
@@ -686,17 +686,17 @@ exports.updateMcqTemplates = async (req, res) => {
     // console.log("LPP3",updatedPaperName)
 
     if (addedMcqData && isDataUpdated) {
-      return res.status(200).send({ "addedData": addedMcqData, "isUpdated": isDataUpdated });
+      return res.status(200).send({  success:"yes",message:"mcq updated","addedData": addedMcqData, "isUpdated": isDataUpdated });
     } else if (addedMcqData&&isDataUpdated=="no") {
-      return res.status(200).send({ addedMcqData });
+      return res.status(200).send({  success:"yes",message:"mcq updated",addedMcqData });
     } else if (isDataUpdated&&!addedMcqData) {
-      return res.status(200).send({ isDataUpdated });
+      return res.status(200).send({ success:"yes",message:"mcq updated",isDataUpdated });
     } else {
       throw new Error("mcq can't be updated");
     }
 
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({ success:"no",message: error.message });
   }
 }
 
@@ -705,11 +705,11 @@ exports.getMcqTemplates = async (req, res) => {
     const allMcqTemplates = await McqModel.find({});
 
     if (allMcqTemplates) {
-      return res.status(200).send(allMcqTemplates);
+      return res.status(200).send({ success:"yes",message:"mcq fetched",allMcqTemplates});
     }
     throw new Error("templates not found");
   } catch (error) {
-    res.status(400).send({ message: error.message });
+    res.status(400).send({ success:"no",message: error.message });
   }
 };
 
@@ -722,12 +722,12 @@ exports.deleteMcqTemplates=async(req,res)=>{
       )
   
       if(deletedData){
-        return res.status(200).send({message:"mcq template deleted successfully"})
+        return res.status(200).send({success:"yes",message:"mcq template deleted successfully",deletedData})
       }else{
         throw new Error("cannot delete mcq template")
       }
   
   }catch (error) {
-      res.status(400).send({ message: error.message });
+      res.status(400).send({success:"no", message: error.message });
     }
 }

@@ -67,7 +67,7 @@ exports.saveTestimonials = async (req, res) => {
 
 
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({success:"no", message: error.message });
   }
 };
 
@@ -86,7 +86,7 @@ exports.fetchTestimonials = async (req, res) => {
 
 
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({ success:"no",message: error.message });
   }
 };
 
@@ -131,7 +131,7 @@ exports.updateTestimonials = async (req, res) => {
       throw new Error("testimonial not updated")
     }
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({ success:"no",message: error.message });
   }
 };
 
@@ -151,6 +151,6 @@ exports.deleteTestimonials = async (req, res) => {
 
 
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({ success:"no",message: error.message });
   }
 };

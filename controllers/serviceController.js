@@ -69,7 +69,7 @@ exports.saveServices = async (req, res) => {
 
 
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({ success:"no",message: error.message });
   }
 };
 
@@ -78,7 +78,7 @@ exports.fetchServices = async (req, res) => {
       const fetchedData = await ServiceModel.find({})
       if (fetchedData) {
         return res.send({
-          success: true,
+          success: "yes",
           message: "all service data", fetchedData
         })
       } else {
@@ -87,7 +87,7 @@ exports.fetchServices = async (req, res) => {
   
   
     } catch (error) {
-      return res.status(400).send({ message: error.message });
+      return res.status(400).send({ success:"no",message: error.message });
     }
 };
 
@@ -129,7 +129,7 @@ exports.updateServices = async (req, res) => {
         throw new Error("service not updated")
       }
     } catch (error) {
-      return res.status(400).send({ message: error.message });
+      return res.status(400).send({ success:"no",message: error.message });
     }
 };
 
@@ -149,6 +149,6 @@ exports.deleteServices = async (req, res) => {
 
 
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({ success:"no",message: error.message });
   }
 };

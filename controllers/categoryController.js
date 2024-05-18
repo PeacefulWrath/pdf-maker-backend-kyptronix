@@ -36,15 +36,12 @@ exports.saveCategories = async (req, res) => {
   try {
     let categoryModel = new CategoryModel();
 
-    categoryModel.name = req.body.name
-    
+    categoryModel.name = req.body.name;
 
-    
     for (var i = 0; i < req.files.category.length; i++) {
       var locaFilePath = req.files.category[i].path;
       var locaFileName = req.files.category[i].filename;
       let imageExtensions = ["png", "jpg", "jpeg", "gif"];
-
 
       if (imageExtensions.includes(locaFileName.split(".")[1])) {
         var resultImage = await uploadImageToCloudinary(
@@ -55,46 +52,46 @@ exports.saveCategories = async (req, res) => {
           categoryModel.image = resultImage.url;
         }
       }
-
     }
-    const insertedData = await categoryModel.save()
+    const insertedData = await categoryModel.save();
     if (insertedData) {
-      return res.send(insertedData)
+      return res.send({
+        success: "no",
+        message: "category inserted",
+        insertedData,
+      });
     } else {
-      throw new Error("category not created")
+      throw new Error("category not created");
     }
-
-
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({ success: "no", message: error.message });
   }
 };
 
 exports.fetchCategories = async (req, res) => {
   try {
-    const allCategoryData = await CategoryModel.find({})
+    const allCategoryData = await CategoryModel.find({});
     // .populate("file_templates").populate("mcq_templates").populate("quiz_templates")
     if (allCategoryData) {
       return res.send({
-        success: true,
-        message: "all category data", allCategoryData
-      })
+        success: "yes",
+        message: "all category data",
+        allCategoryData,
+      });
     } else {
-      throw new Error("categories not fetched")
+      throw new Error("categories not fetched");
     }
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({ success: "no", message: error.message });
   }
 };
 
-exports.updateCategories= async (req, res) => {
+exports.updateCategories = async (req, res) => {
   try {
-      
     for (var i = 0; i < req.files.category.length; i++) {
       var locaFilePath = req.files.category[i].path;
       var locaFileName = req.files.category[i].filename;
       let imageExtensions = ["png", "jpg", "jpeg", "gif"];
-
 
       if (imageExtensions.includes(locaFileName.split(".")[1])) {
         var resultImage = await uploadImageToCloudinary(
@@ -105,7 +102,6 @@ exports.updateCategories= async (req, res) => {
           req.body.image = resultImage.url;
         }
       }
-
     }
     const updatedData = await CategoryModel.findOneAndUpdate(
       { _id: { $eq: req.body.category_id } },
@@ -117,35 +113,41 @@ exports.updateCategories= async (req, res) => {
       }
     );
     if (updatedData) {
-      return res.send(updatedData)
+      return res.send({
+        success: "yes",
+        message: "category updated",
+        updatedData,
+      });
     } else {
-      throw new Error("category not updated")
+      throw new Error("category not updated");
     }
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({ success: "no", message: error.message });
   }
 };
 
 exports.deleteCategories = async (req, res) => {
   try {
     const catId = req.body.cat_id;
-  
-   
-    const deletedCategoryData=await CategoryModel.findOneAndDelete(
-     {_id:{$eq:catId}}
-   )
 
-   const deletedProductData=await ProductModel.deleteMany(
-    {category:{$eq:catId}}
-  )
-    if (deletedCategoryData&&deletedProductData) {
-      return res.send({deletedCategoryData,deletedProductData})
+    const deletedCategoryData = await CategoryModel.findOneAndDelete({
+      _id: { $eq: catId },
+    });
+
+    const deletedProductData = await ProductModel.deleteMany({
+      category: { $eq: catId },
+    });
+    if (deletedCategoryData && deletedProductData) {
+      return res.send({
+        success: "yes",
+        message: "category and all products related to this category deleted",
+        deletedCategoryData,
+        deletedProductData,
+      });
     } else {
-      throw new Error("category and products not deleted")
+      throw new Error("category and products not deleted");
     }
-
-
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({ success: "no", message: error.message });
   }
 };

@@ -13,14 +13,14 @@ exports.saveCus = async (req, res) => {
 
     const insertedData = await cusModel.save()
     if (insertedData) {
-      return res.send({success:"yes",insertedData})
+      return res.send({success:"yes",message:"choose us created",insertedData})
     } else {
       throw new Error("choose us item not created")
     }
 
 
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({success:"no", message: error.message });
   }
 };
 
@@ -28,7 +28,7 @@ exports.fetchCus = async (req, res) => {
     try {
       const allCusData = await CusModel.find({})
       if (allCusData) {
-        return res.send({ success: true,
+        return res.send({ success: "yes",
           message: "all choose us data",allCusData})
       } else {
         throw new Error("choose us not fetched")
@@ -36,7 +36,7 @@ exports.fetchCus = async (req, res) => {
   
   
     } catch (error) {
-      return res.status(400).send({ message: error.message });
+      return res.status(400).send({success:"no", message: error.message });
     }
 };
 
@@ -53,12 +53,12 @@ exports.updateCus = async (req, res) => {
       }
     );
     if (updatedData) {
-      return res.send({success:"yes",updatedData})
+      return res.send({success:"yes",message:"choose us updated",updatedData})
     } else {
       throw new Error("choose us item not updated")
     }
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({ success:"no",message: error.message });
   }
 };
 

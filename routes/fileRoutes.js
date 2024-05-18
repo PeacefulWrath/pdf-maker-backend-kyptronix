@@ -9,6 +9,7 @@ const {
  
 } = require("../controllers/fileController");
 
+const { getToken, verifyToken } = require("../controllers/userController");
 
 const router = express.Router();
 
@@ -29,9 +30,9 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage });
 
 
-router.post("/",   upload.array('files', 10), saveTemplates);
-router.get("/", getTemplates);
-router.put("/",   upload.array('files', 10), updateTemplates);
-router.delete("/", deleteTemplates);
+router.post("/",  getToken, verifyToken, upload.array('files', 10), saveTemplates);
+router.get("/",getToken, verifyToken, getTemplates);
+router.put("/", getToken, verifyToken,  upload.array('files', 10), updateTemplates);
+router.delete("/",getToken, verifyToken, deleteTemplates);
 
 module.exports = router;

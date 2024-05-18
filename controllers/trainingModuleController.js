@@ -69,7 +69,7 @@ exports.saveTraingModules = async (req, res) => {
 
 
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({success:"no", message: error.message });
   }
 };
 
@@ -78,7 +78,7 @@ exports.fetchTraingModules = async (req, res) => {
       const fetchedData = await TrainingModuleModel.find({})
       if (fetchedData) {
         return res.send({
-          success: true,
+          success: "yes",
           message: "all trining module data", fetchedData
         })
       } else {
@@ -87,7 +87,7 @@ exports.fetchTraingModules = async (req, res) => {
   
   
     } catch (error) {
-      return res.status(400).send({ message: error.message });
+      return res.status(400).send({ success:"no",message: error.message });
     }
 };
 
@@ -129,7 +129,7 @@ exports.updateTraingModules = async (req, res) => {
         throw new Error("training module not updated")
       }
     } catch (error) {
-      return res.status(400).send({ message: error.message });
+      return res.status(400).send({ success:"no",message: error.message });
     }
 };
 
@@ -149,6 +149,6 @@ exports.deleteTrainingModules = async (req, res) => {
 
 
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({success:"no", message: error.message });
   }
 };

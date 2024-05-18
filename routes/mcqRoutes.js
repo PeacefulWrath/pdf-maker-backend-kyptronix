@@ -8,7 +8,7 @@ const {
   saveMcqTemplates,
 } = require("../controllers/mcqController");
 const path = require("path");
-
+const { getToken, verifyToken } = require("../controllers/userController");
 const router = express.Router();
 
 if (!fs.existsSync("./uploads")) {
@@ -28,7 +28,7 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage });
 
 router.post(
-  "/",
+  "/",getToken, verifyToken,
   upload.fields([
     {
       name: "options",
@@ -39,7 +39,7 @@ router.post(
   ]),
   saveMcqTemplates
 );
-router.put("/", upload.fields([
+router.put("/",getToken, verifyToken, upload.fields([
   {
     name: "db_options",
   },
@@ -53,6 +53,6 @@ router.put("/", upload.fields([
     name: "answers",
   },
 ]), updateMcqTemplates);
-router.get("/", getMcqTemplates);
-router.delete("/",deleteMcqTemplates)
+router.get("/", getToken, verifyToken,getMcqTemplates);
+router.delete("/",getToken, verifyToken,deleteMcqTemplates)
 module.exports = router;

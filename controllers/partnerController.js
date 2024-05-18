@@ -58,12 +58,12 @@ exports.savePartners= async (req, res) => {
 
     const createdData = await partnerModel.save();
     if (createdData) {
-      return res.status(200).send(createdData);
+      return res.status(200).send({success:"yes",message:"partner created",createdData});
     } else {
       throw new Error("partner created");
     }
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({ success:"no",message: error.message });
   }
 };
 
@@ -98,7 +98,7 @@ exports.updatePartners = async (req, res) => {
         }
       );
       if (updatedData) {
-        return res.send(updatedData)
+        return res.send({success:"yes",message:"partner updated",updatedData})
       } else {
         throw new Error("partner not updated")
       }
@@ -107,7 +107,7 @@ exports.updatePartners = async (req, res) => {
    
 
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({ success:"no",message: error.message });
   }
 }
 
@@ -116,11 +116,11 @@ exports.getPartners = async (req, res) => {
     const allPartnerData = await PartnerModel.find({});
 
     if (allPartnerData) {
-      return res.status(200).send({allPartnerData});
+      return res.status(200).send({success:"yes",message:"all partner data",allPartnerData});
     }
     throw new Error("partners data not found");
   } catch (error) {
-    res.status(400).send({ message: error.message });
+    res.status(400).send({ success:"no",message: error.message });
   }
 };
 
@@ -133,12 +133,12 @@ exports.deletePartners = async (req, res) => {
     )
 
     if (deletedData) {
-      return res.status(200).send({ message: "partner deleted successfully" })
+      return res.status(200).send({success:"yes", message: "partner deleted successfully",deletedData })
     } else {
       throw new Error("cannot delete partner")
     }
 
   } catch (error) {
-    res.status(400).send({ message: error.message });
+    res.status(400).send({ success:"no",message: error.message });
   }
 }

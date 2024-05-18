@@ -64,14 +64,14 @@ exports.saveProducts = async (req, res) => {
 
     const insertedData = await productModel.save()
     if (insertedData) {
-      return res.send(insertedData)
+      return res.send({success:"yes",insertedData})
     } else {
       throw new Error("product not created")
     }
 
 
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({ success:"no",message: error.message });
   }
 };
 
@@ -80,7 +80,7 @@ exports.fetchProducts = async (req, res) => {
     const fetchedData = await ProductModel.find({}).populate('category').populate('file_templates').populate('mcq_templates').populate('quiz_templates')
     if (fetchedData) {
       return res.send({
-        success: true,
+        success: "yes",
         message: "all product data", fetchedData
       })
     } else {
@@ -132,12 +132,12 @@ exports.updateProducts = async (req, res) => {
     );
 
     if (updatedData) {
-      return res.send(updatedData)
+      return res.send({success:"yes",updatedData})
     } else {
       throw new Error("product not updated")
     }
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({ success:"no",message: error.message });
   }
 };
 
@@ -150,13 +150,13 @@ exports.deleteProducts = async (req, res) => {
       { _id: { $eq: prodId } }
     )
     if (deletedData) {
-      return res.send(deletedData)
+      return res.send({success:"yes",deletedData})
     } else {
       throw new Error("product not deleted")
     }
 
 
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({success:"no", message: error.message });
   }
 };

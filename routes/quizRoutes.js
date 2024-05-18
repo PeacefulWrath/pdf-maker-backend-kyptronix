@@ -3,7 +3,7 @@ const multer = require("multer");
 const fs = require("fs");
 const { saveQuizTemplates,updateQuizTemplates,getQuizTemplates,deleteQuizTemplates } = require("../controllers/quizController");
 const path = require("path");
-
+const { getToken, verifyToken } = require("../controllers/userController");
 const router = express.Router();
 
 if (!fs.existsSync("./uploads")) {
@@ -23,7 +23,7 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage });
 
 router.post(
-  "/",
+  "/",getToken, verifyToken,
   upload.fields([
     {
       name: "options",
@@ -35,7 +35,7 @@ router.post(
   saveQuizTemplates
 );
 
-router.put("/", upload.fields([
+router.put("/",getToken, verifyToken, upload.fields([
   {
     name: "db_options",
   },
@@ -50,8 +50,8 @@ router.put("/", upload.fields([
   },
 ]), updateQuizTemplates);
 
-router.get("/", getQuizTemplates);
+router.get("/", getToken, verifyToken,getQuizTemplates);
 
-router.delete("/",deleteQuizTemplates)
+router.delete("/",getToken, verifyToken,deleteQuizTemplates)
 
 module.exports = router;
