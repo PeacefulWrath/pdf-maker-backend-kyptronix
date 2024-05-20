@@ -107,6 +107,23 @@ exports.saveMcqTemplates = async (req, res) => {
 
     mcqModel.paper_name = req.body.paper_name;
 
+    
+    
+    var locaFilePath = req.files.banner[0].path;
+    var locaFileName = req.files.banner[0].filename;
+
+    let imageExtensions = ["png", "jpg", "jpeg", "gif"];
+   
+    if (imageExtensions.includes(locaFileName.split(".")[1])) {
+      var resultImage = await uploadImageToCloudinary(
+        locaFileName,
+        locaFilePath
+      );
+      if (resultImage) {
+        mcqModel.banner=resultImage.url
+      }
+    }
+
     if (req.body.question && Array.isArray(req.body.question)) {
       let tempOptStartInd = 0;
       let tempOptEndInd = 4;
@@ -281,15 +298,30 @@ exports.updateMcqTemplates = async (req, res) => {
 
     }
 
-    let updatedPaperName = undefined
+    let updatedPaperNameAndBanner = undefined
 
     if (req.body.paper_name) {
       // console.log("paper name")
-      updatedPaperName = await McqModel.findOneAndUpdate(
+      var locaFilePath = req.files.banner[0].path;
+      var locaFileName = req.files.banner[0].filename;
+
+      let imageExtensions = ["png", "jpg", "jpeg", "gif"];
+     
+      if (imageExtensions.includes(locaFileName.split(".")[1])) {
+        var resultImage = await uploadImageToCloudinary(
+          locaFileName,
+          locaFilePath
+        );
+        if (resultImage) {
+          req.body.banner=resultImage.url
+        }
+      }
+      updatedPaperNameAndBanner = await McqModel.findOneAndUpdate(
         { _id: req.body.mcqDocId },
         {
           $set: {
             "paper_name": req.body.paper_name,
+            "banner": req.body.banner,
           }
         },
         { returnDocument: "after" }
@@ -684,8 +716,10 @@ exports.updateMcqTemplates = async (req, res) => {
     // console.log("LPP",isDataUpdated)
     // console.log("LPP2",addedMcqData)
     // console.log("LPP3",updatedPaperName)
-
-    if (addedMcqData && isDataUpdated) {
+    if(updatedPaperNameAndBanner&& !isDataUpdated && !addedMcqData){
+      return res.status(200).send({success:"yes", updatedPaperNameAndBanner });
+    }
+    else if (addedMcqData && isDataUpdated) {
       return res.status(200).send({  success:"yes",message:"mcq updated","addedData": addedMcqData, "isUpdated": isDataUpdated });
     } else if (addedMcqData&&isDataUpdated=="no") {
       return res.status(200).send({  success:"yes",message:"mcq updated",addedMcqData });

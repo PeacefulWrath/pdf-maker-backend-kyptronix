@@ -16,6 +16,8 @@
     "cloudmersive-convert-api-client": "^2.8.0",
     "colors": "^1.4.0",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "crypto-js": "^4.2.0",
     "cryptr": "^6.3.0",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",

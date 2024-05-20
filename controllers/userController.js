@@ -7,7 +7,7 @@ exports.signUp = async (req, res) => {
   try {
     let userModel = new UserModel();
     
-    const userData = await userModel.find({email: req.body.email});
+    const userData = await UserModel.find({email: req.body.email});
 
     if(userData.length !==0){
       throw new Error("user already registered")
@@ -31,12 +31,12 @@ exports.signUp = async (req, res) => {
 
     const insertedData = await userModel.save()
     if (insertedData) {
-      return res.send(insertedData)
+      return res.send({success:"yes",insertedData})
     } else {
       throw new Error("user not created")
     }
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({ success:"no",message: error.message });
   }
 };
 
@@ -62,12 +62,12 @@ exports.updateUsers = async (req, res) => {
       }
     );
     if (updatedData) {
-      return res.send(updatedData)
+      return res.send({success:"yes",updatedData})
     } else {
       throw new Error("user not updated")
     }
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({success:"no", message: error.message });
   }
 };
 
@@ -76,14 +76,14 @@ exports.getUsers = async (req, res) => {
     const allUserData = await UserModel.find({}).select("-password")
     if (allUserData) {
       res.status(201).json({
-        success: true,
+        success: "yes",
         message: "all user data",
         allUserData
       })
     }
   } catch (error) {
     res.status(500).send({
-      success: false,
+      success: "no",
       error,
       message: "Error to get all user data",
     });
@@ -123,7 +123,7 @@ exports.signIn = async (req, res) => {
           }
           else {
             res.status(201).send({
-              success: true,
+              success: "yes",
               message: "user successfully sign in",
               token,
               user
@@ -140,7 +140,7 @@ exports.signIn = async (req, res) => {
     }
   } catch (error) {
     res.status(500).send({
-      success: false,
+      success: "no",
       message: error,
     });
   }
@@ -155,7 +155,7 @@ exports.getToken = (req, res, next) => {
     next()
   } else {
     res.status(500).send({
-      success: false,
+      success: "no",
       message: "can't get token",
     })
   }
@@ -165,7 +165,7 @@ exports.verifyToken = (req, res, next) => {
   jwt.verify(req.token, process.env.JWT_SECRET_KEY, (err, authData) => {
     if (err) {
       res.status(500).send({
-        success: false,
+        success: "no",
         message: err.message,
       })
     } else {
@@ -194,3 +194,19 @@ exports.deleteUsers = async (req, res) => {
     return res.status(400).send({ message: error.message });
   }
 };
+
+exports.verifyTokenWithoutNext = (req, res) => {
+  jwt.verify(req.body.jwt_token, process.env.JWT_SECRET_KEY, (err, _) => {
+    if (err) {
+      res.status(500).send({
+        success: "no",
+        message: err.message,
+      })
+    } else {
+      res.status(200).send({
+        success: "yes",
+        message: "token verified",
+      })
+    }
+  })
+}

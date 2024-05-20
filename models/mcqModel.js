@@ -5,6 +5,9 @@ const mcqSchema = new mongoose.Schema(
     paper_name: {
       type: String,
     },
+    banner: {
+      type: String,
+    },
     mcqs: [{
       question: {
         type: String,

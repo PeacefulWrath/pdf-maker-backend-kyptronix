@@ -66,6 +66,9 @@ const purchaseOrderSchema = new mongoose.Schema(
             type: String,
         },
         details: [{
+            description:{
+                type: String,
+            },
             quantity: {
                 type: Number,
             },

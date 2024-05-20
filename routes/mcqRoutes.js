@@ -31,6 +31,9 @@ router.post(
   "/",getToken, verifyToken,
   upload.fields([
     {
+      name: "banner",
+    },
+    {
       name: "options",
     },
     {
@@ -40,6 +43,9 @@ router.post(
   saveMcqTemplates
 );
 router.put("/",getToken, verifyToken, upload.fields([
+  {
+    name: "banner",
+  },
   {
     name: "db_options",
   },

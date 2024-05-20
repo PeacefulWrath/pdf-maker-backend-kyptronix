@@ -14,7 +14,7 @@ cloudinary.v2.config({
 async function uploadImageToCloudinary(locaFileName, locaFilePath) {
   return cloudinary.v2.uploader
     .upload(locaFilePath, {
-      public_id: locaFileName,
+      public_id: locaFileName.split(".")[0],
       folder: "images/",
       use_filename: true,
     })
@@ -108,6 +108,22 @@ exports.saveQuizTemplates = async (req, res) => {
     // all options in tempOptions
 
     quizModel.paper_name = req.body.paper_name;
+
+    
+    var locaFilePath = req.files.banner[0].path;
+    var locaFileName = req.files.banner[0].filename;
+
+    let imageExtensions = ["png", "jpg", "jpeg", "gif"];
+   
+    if (imageExtensions.includes(locaFileName.split(".")[1])) {
+      var resultImage = await uploadImageToCloudinary(
+        locaFileName,
+        locaFilePath
+      );
+      if (resultImage) {
+        quizModel.banner=resultImage.url
+      }
+    }
 
     if (req.body.question && Array.isArray(req.body.question)) {
       let tempOptStartInd = 0;
@@ -210,15 +226,32 @@ exports.updateQuizTemplates = async (req, res) => {
   try {
 
 
-    let updatedPaperName = undefined
+    let updatedPaperNameAndBanner = undefined
 
-    if (req.body.paper_name) {
+    if (req.body.paper_name&&req.files.banner) {
+
+      var locaFilePath = req.files.banner[0].path;
+      var locaFileName = req.files.banner[0].filename;
+
+      let imageExtensions = ["png", "jpg", "jpeg", "gif"];
+     
+      if (imageExtensions.includes(locaFileName.split(".")[1])) {
+        var resultImage = await uploadImageToCloudinary(
+          locaFileName,
+          locaFilePath
+        );
+        if (resultImage) {
+          req.body.banner=resultImage.url
+        }
+      }
+
       // console.log("paper name")
-      updatedPaperName = await QuizModel.findOneAndUpdate(
+      updatedPaperNameAndBanner = await QuizModel.findOneAndUpdate(
         { _id: req.body.quizDocId },
         {
           $set: {
             "paper_name": req.body.paper_name,
+            "banner": req.body.banner,
           }
         },
         { returnDocument: "after" }
@@ -615,8 +648,9 @@ exports.updateQuizTemplates = async (req, res) => {
     // console.log("LPP",isDataUpdated)
     // console.log("LPP2",addedMcqData)
     // console.log("LPP3",updatedPaperName)
-
-    if (addedQuizData && isDataUpdated) {
+    if(updatedPaperNameAndBanner&& !isDataUpdated && !addedQuizData){
+      return res.status(200).send({success:"yes", updatedPaperNameAndBanner });
+    }else if (addedQuizData && isDataUpdated) {
       return res.status(200).send({ success:"yes","addedData": addedQuizData, "isUpdated": isDataUpdated });
     } else if (addedQuizData && !isDataUpdated) {
       return res.status(200).send({success:"yes", addedQuizData });

@@ -5,6 +5,9 @@ const quizSchema = new mongoose.Schema(
     paper_name: {
       type: String,
     },
+    banner: {
+      type: String,
+    },
     quizzes: [{
       question: {
         type: String,

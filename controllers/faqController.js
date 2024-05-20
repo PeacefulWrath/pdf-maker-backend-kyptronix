@@ -2,6 +2,9 @@ const FaqModel = require("../models/faqModel");
 
 const dotenv = require("dotenv");
 
+var CryptoJS = require("crypto-js");
+
+
 
 exports.saveFaqs = async (req, res) => {
   try {
@@ -26,8 +29,11 @@ exports.saveFaqs = async (req, res) => {
 
 exports.fetchFaqs = async (req, res) => {
     try {
-      const allFaqData = await FaqModel.find({})
+      let allFaqData = await FaqModel.find({})
+      
       if (allFaqData) {
+        // allFaqData=CryptoJS.AES.encrypt(JSON.stringify(allFaqData), 'secret key 123').toString()
+        // console.log("allFaqData",CryptoJS.AES.encrypt(JSON.stringify(allFaqData), 'secret key 123').toString())
         return res.send({ success: "yes",
           message: "all faq data",allFaqData})
       } else {

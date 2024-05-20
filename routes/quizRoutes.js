@@ -26,6 +26,9 @@ router.post(
   "/",getToken, verifyToken,
   upload.fields([
     {
+      name: "banner",
+    },
+    {
       name: "options",
     },
     {
@@ -36,6 +39,9 @@ router.post(
 );
 
 router.put("/",getToken, verifyToken, upload.fields([
+  {
+    name: "banner",
+  },
   {
     name: "db_options",
   },
