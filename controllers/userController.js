@@ -198,7 +198,7 @@ exports.deleteUsers = async (req, res) => {
 exports.verifyTokenWithoutNext = (req, res) => {
   jwt.verify(req.body.jwt_token, process.env.JWT_SECRET_KEY, (err, _) => {
     if (err) {
-      res.status(500).send({
+      res.status(301).send({
         success: "no",
         message: err.message,
       })
