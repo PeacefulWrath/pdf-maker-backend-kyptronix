@@ -199,7 +199,7 @@ exports.saveTemplates = async (req, res) => {
     });
 
     if (insertedTemplateData) {
-      return res.status(200).send({success:"no",message:"file created",insertedTemplateData});
+      return res.status(200).send({success:"yes",message:"file created",insertedTemplateData});
     } else {
       throw new Error("cannot insert data in db");
     }
