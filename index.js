@@ -17,6 +17,11 @@ const  cusRoutes=require("./routes/chooseUsRoutes")
 const testimonialRoutes=require("./routes/testimonialRoutes")
 const serviceRoutes=require("./routes/serviceRoutes")
 const partnerRoutes=require("./routes/partnerRoutes")
+const ourMissionRoutes=require("./routes/ourMission")
+const ourVisionRoutes=require("./routes/ourVision")
+const aboutUsRoutes=require("./routes/aboutUsRoutes")
+const callUsRoutes=require("./routes/callUsRoutes")
+const emailUsRoutes=require("./routes/emailUsRoutes")
 
 dotenv.config();
 connectDB();
@@ -42,7 +47,11 @@ app.use("/api/choose-us", cusRoutes);
 app.use("/api/testimonial", testimonialRoutes);
 app.use("/api/service",serviceRoutes);
 app.use("/api/partner",partnerRoutes);
-
+app.use("/api/our-mission",ourMissionRoutes);
+app.use("/api/our-vision",ourVisionRoutes);
+app.use("/api/about-us",aboutUsRoutes);
+app.use("/api/call-us",callUsRoutes);
+app.use("/api/email-us",emailUsRoutes);
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

@@ -228,34 +228,50 @@ exports.updateQuizTemplates = async (req, res) => {
 
     let updatedPaperNameAndBanner = undefined
 
-    if (req.body.paper_name&&req.files.banner) {
+    if (req.body.paper_name) {
 
-      var locaFilePath = req.files.banner[0].path;
-      var locaFileName = req.files.banner[0].filename;
+      if (req.files.banner && Array.isArray(req.files.banner)) {
+        var locaFilePath = req.files.banner[0].path;
+        var locaFileName = req.files.banner[0].filename;
 
-      let imageExtensions = ["png", "jpg", "jpeg", "gif"];
-     
-      if (imageExtensions.includes(locaFileName.split(".")[1])) {
-        var resultImage = await uploadImageToCloudinary(
-          locaFileName,
-          locaFilePath
-        );
-        if (resultImage) {
-          req.body.banner=resultImage.url
+        let imageExtensions = ["png", "jpg", "jpeg", "gif"];
+
+        if (imageExtensions.includes(locaFileName.split(".")[1])) {
+          var resultImage = await uploadImageToCloudinary(
+            locaFileName,
+            locaFilePath
+          );
+          if (resultImage) {
+            req.body.banner = resultImage.url
+          }
         }
       }
-
       // console.log("paper name")
-      updatedPaperNameAndBanner = await QuizModel.findOneAndUpdate(
-        { _id: req.body.quizDocId },
-        {
-          $set: {
-            "paper_name": req.body.paper_name,
-            "banner": req.body.banner,
-          }
-        },
-        { returnDocument: "after" }
-      );
+
+      if (req.body.banner) {
+        updatedPaperNameAndBanner = await QuizModel.findOneAndUpdate(
+          { _id: req.body.quizDocId },
+          {
+            $set: {
+              "paper_name": req.body.paper_name,
+              "banner": req.body.banner,
+            }
+          },
+          { returnDocument: "after" }
+        )
+
+      }
+      else {
+        updatedPaperNameAndBanner = await QuizModel.findOneAndUpdate(
+          { _id: req.body.quizDocId },
+          {
+            $set: {
+              "paper_name": req.body.paper_name,
+              //  "banner": req.body.banner,
+            }
+          },
+          { returnDocument: "after" })
+      }
 
       // console.log(updatedPaperName)
     }

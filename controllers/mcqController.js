@@ -302,6 +302,7 @@ exports.updateMcqTemplates = async (req, res) => {
 
     if (req.body.paper_name) {
       // console.log("paper name")
+      if (req.files.banner && Array.isArray(req.files.banner)) {
       var locaFilePath = req.files.banner[0].path;
       var locaFileName = req.files.banner[0].filename;
 
@@ -316,6 +317,9 @@ exports.updateMcqTemplates = async (req, res) => {
           req.body.banner=resultImage.url
         }
       }
+      }
+
+      if (req.body.banner) {
       updatedPaperNameAndBanner = await McqModel.findOneAndUpdate(
         { _id: req.body.mcqDocId },
         {
@@ -325,7 +329,19 @@ exports.updateMcqTemplates = async (req, res) => {
           }
         },
         { returnDocument: "after" }
-      );
+      )}
+      else{
+        updatedPaperNameAndBanner = await McqModel.findOneAndUpdate(
+          { _id: req.body.mcqDocId },
+          {
+            $set: {
+              "paper_name": req.body.paper_name,
+              // "banner": req.body.banner,
+            }
+          },
+          { returnDocument: "after" }
+        )
+      }
 
       // console.log(updatedPaperName)
     }
