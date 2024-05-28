@@ -19,16 +19,18 @@ async function uploadImageToCloudinary(locaFileName, locaFilePath) {
       use_filename: true,
     })
     .then((result) => {
-      // fs.unlinkSync(locaFilePath);
+      // if(fs.unlinkSync(locaFilePath))
       return {
         message: "Success",
         url: result.secure_url,
       };
     })
     .catch((error) => {
-      // fs.unlinkSync(locaFilePath);
+      // if(fs.unlinkSync(locaFilePath))
+      //   {
       console.log("cloudinary error", error);
       return { message: "Fail to upload in cloudinary" };
+        // }
     });
 }
 
@@ -708,9 +710,9 @@ exports.updateMcqTemplates = async (req, res) => {
       mcqDocData.mcqs[tempMcqLength].options_type = req.body.options_type;
       // mcqDocData.mcqs[tempMcqLength].mark = req.body.mark;
       mcqDocData.mcqs[tempMcqLength].explaination = req.body.explaination;
-      // for (let j = 0; j < 4; j++) {
-        mcqDocData.mcqs[tempMcqLength].options.push(tempOptions);
-      // }
+      for (let j = 0; j < tempOptions.length; j++) {
+        mcqDocData.mcqs[tempMcqLength].options.push(tempOptions[j]);
+      }
     }
 
     // console.log("___",mcqDocData)
@@ -732,16 +734,9 @@ exports.updateMcqTemplates = async (req, res) => {
     // console.log("LPP",isDataUpdated)
     // console.log("LPP2",addedMcqData)
     // console.log("LPP3",updatedPaperName)
-    if(updatedPaperNameAndBanner&& !isDataUpdated && !addedMcqData){
-      return res.status(200).send({success:"yes", updatedPaperNameAndBanner });
-    }
-    else if (addedMcqData && isDataUpdated) {
-      return res.status(200).send({  success:"yes",message:"mcq updated","addedData": addedMcqData, "isUpdated": isDataUpdated });
-    } else if (addedMcqData&&isDataUpdated=="no") {
-      return res.status(200).send({  success:"yes",message:"mcq updated",addedMcqData });
-    } else if (isDataUpdated&&!addedMcqData) {
-      return res.status(200).send({ success:"yes",message:"mcq updated",isDataUpdated });
-    } else {
+    if(updatedPaperNameAndBanner|| isDataUpdated || addedMcqData){
+      return res.status(200).send({success:"yes", message:"mcq data updated" });
+    }else {
       throw new Error("mcq can't be updated");
     }
 
