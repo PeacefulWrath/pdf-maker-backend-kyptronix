@@ -333,7 +333,7 @@ exports.updateQuizTemplates = async (req, res) => {
       }
 
 
-      if (updateData[k].db_answers_replacable_question_no) {
+      if (updateData[k].db_image_answer_replacable_option_type&&updateData[k].db_image_answer_replacable_option_type==="image") {
         locaFilePath = req.files.db_answers[dbImgAnswersIndex].path;
         locaFileName = req.files.db_answers[dbImgAnswersIndex].filename;
 
