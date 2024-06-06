@@ -6,10 +6,10 @@ const jwt = require("jsonwebtoken")
 exports.signUp = async (req, res) => {
   try {
     let userModel = new UserModel();
-    
-    const userData = await UserModel.find({email: req.body.email});
 
-    if(userData.length !==0){
+    const userData = await UserModel.find({ email: req.body.email });
+
+    if (userData.length !== 0) {
       throw new Error("user already registered")
     }
 
@@ -19,7 +19,7 @@ exports.signUp = async (req, res) => {
     userModel.role = req.body.role
     userModel.email = req.body.email
 
-    
+
     const password = req.body.password
     const hashedPassword = await new Promise((resolve, reject) => {
       bcrypt.hash(password, 10, function (err, hash) {
@@ -31,12 +31,12 @@ exports.signUp = async (req, res) => {
 
     const insertedData = await userModel.save()
     if (insertedData) {
-      return res.send({success:"yes",insertedData})
+      return res.send({ success: "yes", insertedData })
     } else {
       throw new Error("user not created")
     }
   } catch (error) {
-    return res.status(400).send({ success:"no",message: error.message });
+    return res.status(400).send({ success: "no", message: error.message });
   }
 };
 
@@ -62,12 +62,12 @@ exports.updateUsers = async (req, res) => {
       }
     );
     if (updatedData) {
-      return res.send({success:"yes",updatedData})
+      return res.send({ success: "yes", updatedData })
     } else {
       throw new Error("user not updated")
     }
   } catch (error) {
-    return res.status(400).send({success:"no", message: error.message });
+    return res.status(400).send({ success: "no", message: error.message });
   }
 };
 
@@ -93,8 +93,8 @@ exports.getUsers = async (req, res) => {
 exports.signIn = async (req, res) => {
   try {
     if (!req.body.email) {
-     throw "Please provide email"
-      
+      throw "Please provide email"
+
     }
     if (!req.body.password) {
       throw "Please provide password"
@@ -178,20 +178,21 @@ exports.verifyToken = (req, res, next) => {
 exports.deleteUsers = async (req, res) => {
   try {
     const userId = req.body.user_id;
-  
-   
-    const deletedData=await UserModel.findOneAndDelete(
-     {_id:{$eq:userId}}
-   )
+
+
+    const deletedData = await UserModel.findOneAndDelete(
+      { _id: { $eq: userId } }
+    )
     if (deletedData) {
-      return res.send(deletedData)
+      return res.status(201).send(
+        { success: "yes", deletedData })
     } else {
       throw new Error("user not deleted")
     }
 
 
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({ success: "no", message: error.message });
   }
 };
 
