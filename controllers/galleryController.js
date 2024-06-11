@@ -39,6 +39,7 @@ exports.saveGallery = async (req, res) => {
     galleryModel.name = req.body.name;
     galleryModel.category = req.body.category;
 
+    if(req.files.gallery&&Array.isArray(req.files.gallery)){
     for (var i = 0; i < req.files.gallery.length; i++) {
       var locaFilePath = req.files.gallery[i].path;
       var locaFileName = req.files.gallery[i].filename;
@@ -56,7 +57,7 @@ exports.saveGallery = async (req, res) => {
         }
       }
     }
-
+  }
     // console.log(")))", req.files)
     const insertedData = await galleryModel.save();
     if (insertedData) {

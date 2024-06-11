@@ -70,7 +70,7 @@ exports.savePartners= async (req, res) => {
 exports.updatePartners = async (req, res) => {
   try {
 
-    if(Array.isArray(req.files.partner)){
+    if(req.files.partner&&Array.isArray(req.files.partner)){
       for (var i = 0; i < req.files.partner.length; i++) {
         var locaFilePath = req.files.partner[i].path;
         var locaFileName = req.files.partner[i].filename;
