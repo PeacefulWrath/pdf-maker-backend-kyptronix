@@ -56,7 +56,7 @@ exports.saveCategories = async (req, res) => {
     const insertedData = await categoryModel.save();
     if (insertedData) {
       return res.send({
-        success: "no",
+        success: "yes",
         message: "category inserted",
         insertedData,
       });
@@ -88,7 +88,9 @@ exports.fetchCategories = async (req, res) => {
 
 exports.updateCategories = async (req, res) => {
   try {
-    for (var i = 0; i < req.files.category.length; i++) {
+
+    if(req.files.category&&Array.isArray(req.files.category))
+   { for (var i = 0; i < req.files.category.length; i++) {
       var locaFilePath = req.files.category[i].path;
       var locaFileName = req.files.category[i].filename;
       let imageExtensions = ["png", "jpg", "jpeg", "gif"];
@@ -102,7 +104,7 @@ exports.updateCategories = async (req, res) => {
           req.body.image = resultImage.url;
         }
       }
-    }
+    }}
     const updatedData = await CategoryModel.findOneAndUpdate(
       { _id: { $eq: req.body.category_id } },
       {
