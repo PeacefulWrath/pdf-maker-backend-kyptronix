@@ -1,6 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
+
+
 const connectDB = require("./config/db");
 const fileRoutes = require("./routes/fileRoutes");
 const mcqRoutes=require("./routes/mcqRoutes")
@@ -22,6 +24,7 @@ const ourVisionRoutes=require("./routes/ourVision")
 const aboutUsRoutes=require("./routes/aboutUsRoutes")
 const callUsRoutes=require("./routes/callUsRoutes")
 const emailUsRoutes=require("./routes/emailUsRoutes")
+const orderRoutes=require("./routes/orderRoutes")
 
 dotenv.config();
 connectDB();
@@ -31,6 +34,7 @@ app.use(cors());
 
 const PORT = process.env.PORT;
 
+const stripe=require("stripe")(process.env.SECRET_STRIPE_KEY)
 
 app.use("/api/template", fileRoutes);
 app.use("/api/mcq-template", mcqRoutes);
@@ -52,6 +56,41 @@ app.use("/api/our-vision",ourVisionRoutes);
 app.use("/api/about-us",aboutUsRoutes);
 app.use("/api/call-us",callUsRoutes);
 app.use("/api/email-us",emailUsRoutes);
+app.use("/api/order",orderRoutes);
+
+
+//payment
+
+app.post("/checkout",async(req,res)=>{
+  try{
+    const session=await stripe.checkout.sessions.create({
+      payment_method_types:['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: req.body.product_name,
+            },
+            unit_amount: req.body.amount*100,
+          },
+          quantity: req.body.quantity,
+        },
+      ],
+      mode: 'payment',
+      success_url: `${process.env.STRIPE_SUCCESS_URL}`,
+      cancel_url: `${process.env.STRIPE_FAILURE_URL}`,
+    })
+
+    if(session){
+      res.json({success:"yes", session: session, message:"session created" });
+    }
+
+  }catch(error){
+          res.status(400).json({success:"no",message:error.message})
+  }
+})
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

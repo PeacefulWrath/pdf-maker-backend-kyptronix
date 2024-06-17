@@ -1,7 +1,7 @@
 const UserModel = require("../models/userModel");
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 const dotenv = require("dotenv");
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
 
 exports.signUp = async (req, res) => {
   try {
@@ -10,30 +10,31 @@ exports.signUp = async (req, res) => {
     const userData = await UserModel.find({ email: req.body.email });
 
     if (userData.length !== 0) {
-      throw new Error("user already registered")
+      throw new Error("user already registered");
     }
 
-    userModel.first_name = req.body.first_name
-    userModel.last_name = req.body.last_name
-    userModel.phone_no = req.body.phone_no
-    userModel.role = req.body.role
-    userModel.email = req.body.email
+    userModel.first_name = req.body.first_name;
+    userModel.last_name = req.body.last_name;
+    userModel.phone_no = req.body.phone_no;
+    userModel.role = req.body.role;
+    userModel.email = req.body.email;
+    userModel.buyed_products = [];
+    // userModel.cart_items = [];
 
-
-    const password = req.body.password
+    const password = req.body.password;
     const hashedPassword = await new Promise((resolve, reject) => {
       bcrypt.hash(password, 10, function (err, hash) {
-        if (err) reject(err)
-        resolve(hash)
+        if (err) reject(err);
+        resolve(hash);
       });
-    })
-    userModel.password = hashedPassword
+    });
+    userModel.password = hashedPassword;
 
-    const insertedData = await userModel.save()
+    const insertedData = await userModel.save();
     if (insertedData) {
-      return res.send({ success: "yes", insertedData })
+      return res.send({ success: "yes", insertedData });
     } else {
-      throw new Error("user not created")
+      throw new Error("user not created");
     }
   } catch (error) {
     return res.status(400).send({ success: "no", message: error.message });
@@ -43,14 +44,14 @@ exports.signUp = async (req, res) => {
 exports.updateUsers = async (req, res) => {
   try {
     if (req.body.password) {
-      const password = req.body.password
+      const password = req.body.password;
       const hashedPassword = await new Promise((resolve, reject) => {
         bcrypt.hash(password, 10, function (err, hash) {
-          if (err) reject(err)
-          resolve(hash)
+          if (err) reject(err);
+          resolve(hash);
         });
-      })
-      req.body.password = hashedPassword
+      });
+      req.body.password = hashedPassword;
     }
     const updatedData = await UserModel.findOneAndUpdate(
       { _id: { $eq: req.body.user_id } },
@@ -62,9 +63,9 @@ exports.updateUsers = async (req, res) => {
       }
     );
     if (updatedData) {
-      return res.send({ success: "yes", updatedData })
+      return res.send({ success: "yes", updatedData });
     } else {
-      throw new Error("user not updated")
+      throw new Error("user not updated");
     }
   } catch (error) {
     return res.status(400).send({ success: "no", message: error.message });
@@ -73,13 +74,63 @@ exports.updateUsers = async (req, res) => {
 
 exports.getUsers = async (req, res) => {
   try {
-    const allUserData = await UserModel.find({}).select("-password")
+    const allUserData = await UserModel.find({})
+      .select("-password")
+      .populate({
+        path: "buyed_products",
+        populate: {
+          path: "category",
+        },
+      })
+      .populate({
+        path: "buyed_products",
+        populate: {
+          path: "file_templates",
+        },
+      })
+      .populate({
+        path: "buyed_products",
+        populate: {
+          path: "mcq_templates",
+        },
+      })
+      .populate({
+        path: "buyed_products",
+        populate: {
+          path: "quiz_templates",
+        },
+      })
+
+      // .populate({
+      //   path: "cart_items",
+      //   populate: {
+      //     path: "category",
+      //   },
+      // })
+      // .populate({
+      //   path: "cart_items",
+      //   populate: {
+      //     path: "file_templates",
+      //   },
+      // })
+      // .populate({
+      //   path: "cart_items",
+      //   populate: {
+      //     path: "mcq_templates",
+      //   },
+      // })
+      // .populate({
+      //   path: "cart_items",
+      //   populate: {
+      //     path: "quiz_templates",
+      //   },
+      // });
     if (allUserData) {
       res.status(201).json({
         success: "yes",
         message: "all user data",
-        allUserData
-      })
+        allUserData,
+      });
     }
   } catch (error) {
     res.status(500).send({
@@ -93,13 +144,11 @@ exports.getUsers = async (req, res) => {
 exports.signIn = async (req, res) => {
   try {
     if (!req.body.email) {
-      throw "Please provide email"
-
+      throw "Please provide email";
     }
     if (!req.body.password) {
-      throw "Please provide password"
+      throw "Please provide password";
     }
-
 
     const email = req.body.email;
     const password = req.body.password;
@@ -109,34 +158,34 @@ exports.signIn = async (req, res) => {
     const userData = await UserModel.find({ email: email });
 
     if (userData.length !== 0) {
-      const hash = userData[0]?.password
-      const isValidPassword = await bcrypt.compare(password, hash)
+      const hash = userData[0]?.password;
+      const isValidPassword = await bcrypt.compare(password, hash);
       // console.log("78",isValidPassword)
       if (isValidPassword) {
-        const user = userData[0]
+        const user = userData[0];
 
-        jwt.sign(JSON.parse(JSON.stringify(user)), process.env.JWT_SECRET_KEY, { expiresIn: '1h' }, (error, token) => {
-          if (error) {
-
-            throw error.message
-
+        jwt.sign(
+          JSON.parse(JSON.stringify(user)),
+          process.env.JWT_SECRET_KEY,
+          { expiresIn: "1h" },
+          (error, token) => {
+            if (error) {
+              throw error.message;
+            } else {
+              res.status(201).send({
+                success: "yes",
+                message: "user successfully sign in",
+                token,
+                user,
+              });
+            }
           }
-          else {
-            res.status(201).send({
-              success: "yes",
-              message: "user successfully sign in",
-              token,
-              user
-            });
-          }
-        })
+        );
+      } else {
+        throw "Password not matched";
       }
-      else {
-        throw "Password not matched"
-      }
-    }
-    else {
-      throw "user not registered"
+    } else {
+      throw "user not registered";
     }
   } catch (error) {
     res.status(500).send({
@@ -149,17 +198,17 @@ exports.signIn = async (req, res) => {
 exports.getToken = (req, res, next) => {
   const bearerHeader = req.headers["authorization"];
   if (typeof bearerHeader !== undefined) {
-    const bearer = bearerHeader.split(" ")
-    const token = bearer[1]
-    req.token = token
-    next()
+    const bearer = bearerHeader.split(" ");
+    const token = bearer[1];
+    req.token = token;
+    next();
   } else {
     res.status(500).send({
       success: "no",
       message: "can't get token",
-    })
+    });
   }
-}
+};
 
 exports.verifyToken = (req, res, next) => {
   jwt.verify(req.token, process.env.JWT_SECRET_KEY, (err, authData) => {
@@ -167,30 +216,26 @@ exports.verifyToken = (req, res, next) => {
       res.status(500).send({
         success: "no",
         message: err.message,
-      })
+      });
     } else {
       req.body.authData = authData;
-      next()
+      next();
     }
-  })
-}
+  });
+};
 
 exports.deleteUsers = async (req, res) => {
   try {
     const userId = req.body.user_id;
 
-
-    const deletedData = await UserModel.findOneAndDelete(
-      { _id: { $eq: userId } }
-    )
+    const deletedData = await UserModel.findOneAndDelete({
+      _id: { $eq: userId },
+    });
     if (deletedData) {
-      return res.status(201).send(
-        { success: "yes", deletedData })
+      return res.status(201).send({ success: "yes", deletedData });
     } else {
-      throw new Error("user not deleted")
+      throw new Error("user not deleted");
     }
-
-
   } catch (error) {
     return res.status(400).send({ success: "no", message: error.message });
   }
@@ -202,12 +247,12 @@ exports.verifyTokenWithoutNext = (req, res) => {
       res.status(301).send({
         success: "no",
         message: err.message,
-      })
+      });
     } else {
       res.status(200).send({
         success: "yes",
         message: "token verified",
-      })
+      });
     }
-  })
-}
+  });
+};
